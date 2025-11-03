@@ -1,0 +1,58 @@
+@startuml
+!include ../style.puml
+skinparam ArrowFontStyle plain
+
+actor User as user USER_COLOR
+participant ":SGSafe" as sgsafe MAIN_COLOR
+participant "<<class>>\n:Parser" as parser UI_COLOR
+participant "<<class>>\n:Validator" as validator UI_COLOR
+participant "<<class>>\n:DateFormatter" as dateformatter UI_COLOR
+
+user -[USER_COLOR]> sgsafe : "add --category ..."
+activate sgsafe MAIN_COLOR
+
+sgsafe -[MAIN_COLOR]> parser : parseInput(userInput)
+activate parser UI_COLOR
+
+parser -[UI_COLOR]> parser : parseAddCommand(remainder)
+activate parser
+
+parser -[UI_COLOR]> validator : inputIsEmpty(remainder)
+activate validator UI_COLOR
+validator --[UI_COLOR]> parser : return
+deactivate validator
+
+parser -[UI_COLOR]> parser : extractFlagValues(remainder)
+activate parser
+parser --[UI_COLOR]> parser : return flagValues
+deactivate parser
+
+parser -[UI_COLOR]> validator : haveAllRequiredFlags(flagValues, requiredFlags)
+activate validator UI_COLOR
+validator --[UI_COLOR]> parser : return
+deactivate validator
+
+parser -[UI_COLOR]> validator : haveValidFlags(flagValues, validFlags)
+activate validator UI_COLOR
+validator --[UI_COLOR]> parser : return
+deactivate validator
+
+parser -[UI_COLOR]> dateformatter : parseDate(dateString, dateFormat)
+activate dateformatter UI_COLOR
+dateformatter --[UI_COLOR]> parser : return LocalDate
+deactivate dateformatter
+
+create participant ":AddCommand" as newCmd COMMAND_COLOR
+parser -[UI_COLOR]> newCmd : new Command(...)
+activate newCmd COMMAND_COLOR
+
+newCmd --> parser : return addCommand
+deactivate newCmd
+
+parser --> parser : return addCommand
+deactivate parser
+
+parser --> sgsafe : return addCommand
+deactivate parser
+
+@enduml

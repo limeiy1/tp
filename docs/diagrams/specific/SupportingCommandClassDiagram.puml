@@ -1,0 +1,144 @@
+@startuml CommandClassDiagram
+hide circle
+skinparam classAttributeIconSize 0
+scale max 1024 width
+
+' Abstract base class
+abstract class "{abstract} \n Command" {
+    # CommandType commandType
+    + {abstract} execute(): void
+    + getCommandType(): CommandType
+}
+
+' Case Listing Mode Enum
+enum "{enumeration} \n CaseListingMode" {
+    DEFAULT
+    OPEN_ONLY
+    CLOSED_ONLY
+}
+
+' Command Type Enum
+enum "{enumeration} \n CommandType"  {
+    ADD
+    EDIT
+    DELETE
+    READ
+    LIST
+    OPEN
+    CLOSE
+    FIND
+    SETTING
+    HELP
+    BYE
+}
+
+' Setting Type Enum
+enum "{enumeration} \n SettingType"  {
+    DATEINPUT
+    DATEOUTPUT
+    TIMESTAMPOUTPUT
+}
+
+hide "{enumeration} \n CommandType" methods
+hide "{enumeration} \n SettingType" methods
+hide "{enumeration} \n CaseListingMode" methods
+
+class SettingCommand {
+    - SettingType settingType
+    - String newDateFormat
+    + SettingCommand(String, String)
+    + execute(): void
+}
+
+class HelpCommand {
+    + HelpCommand()
+    + execute(): void
+}
+
+class ByeCommand {
+    + ByeCommand()
+    + execute(): void
+}
+
+class ReadCommand {
+    - String caseId
+    + ReadCommand(String)
+    + execute(): void
+}
+
+class ListCommand {
+    - CaseListingMode listingMode
+    - boolean isVerbose
+    + ListCommand(CaseListingMode, boolean)
+    + execute(): void
+    - generateListTabTableHeaderMessage(): String
+    - formatCases(): List<String>
+    - filterCasesByMode(): ArrayList<Case>
+    - generateCaseCountMessage(): String
+    getCaseDescriptions(): String[]
+}
+
+class FindCommand {
+    - CaseListingMode listingMode
+    - String keyword
+    + FindCommand(String, CaseListingMode)
+    + execute(): void
+    - getAllCaseDisplayLines(ArrayList<Case>): List<String>
+    - generateListTableHeaderMessage(): String
+    - getCaseDescriptions(ArrayList<Case>): String[]
+    - filterCases(ArrayList<Case>): ArrayList<Case>
+    - isCaseVisible(Case): Boolean
+}
+
+
+
+
+' Inheritance relationships
+"{abstract} \n Command" <|-- SettingCommand
+"{abstract} \n Command" <|-- HelpCommand
+"{abstract} \n Command" <|-- ByeCommand
+"{abstract} \n Command" <|-- ReadCommand
+"{abstract} \n Command" <|-- ListCommand
+"{abstract} \n Command" <|-- FindCommand
+
+' Associations with enums
+"{abstract} \n Command" ..> "{enumeration} \n CommandType"
+SettingCommand ..> "{enumeration} \n CommandType"
+HelpCommand ..> "{enumeration} \n CommandType"
+ByeCommand ..> "{enumeration} \n CommandType"
+ReadCommand ..> "{enumeration} \n CommandType"
+ListCommand ..> "{enumeration} \n CommandType"
+FindCommand ..> "{enumeration} \n CommandType"
+ListCommand ..> "{enumeration} \n CaseListingMode"
+FindCommand ..> "{enumeration} \n CaseListingMode"
+SettingCommand ..> "{enumeration} \n SettingType"
+
+' Notes
+note right of "{abstract} \n Command"
+    Abstract base class implementing
+    the Command Pattern.
+    All commands must implement
+    the execute() method.
+end note
+
+note bottom of SettingCommand
+    Modifies application settings
+    based on the setting type
+end note
+
+note bottom of ListCommand
+    Filters case listings based
+    on the specified mode
+end note
+
+note bottom of FindCommand
+    Filters case listings based
+    on the specified mode
+end note
+
+note bottom of ReadCommand
+    To view all details of a specific case
+    that is identified by its unique ID
+end note
+
+@enduml

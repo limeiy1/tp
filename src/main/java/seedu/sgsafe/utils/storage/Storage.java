@@ -3,6 +3,7 @@ package seedu.sgsafe.utils.storage;
 import seedu.sgsafe.domain.casefiles.Case;
 import seedu.sgsafe.domain.casefiles.CaseManager;
 import seedu.sgsafe.domain.casefiles.type.CaseCategory;
+import seedu.sgsafe.domain.casefiles.type.InvalidCase;
 import seedu.sgsafe.domain.casefiles.type.OthersCase;
 import seedu.sgsafe.domain.casefiles.type.financial.BurglaryCase;
 import seedu.sgsafe.domain.casefiles.type.financial.ScamCase;
@@ -16,16 +17,27 @@ import seedu.sgsafe.domain.casefiles.type.traffic.SpeedingCase;
 import seedu.sgsafe.domain.casefiles.type.violent.AssaultCase;
 import seedu.sgsafe.domain.casefiles.type.violent.MurderCase;
 import seedu.sgsafe.domain.casefiles.type.violent.RobberyCase;
-import seedu.sgsafe.utils.settings.Settings;
+
+import seedu.sgsafe.utils.exceptions.InvalidSaveStringException;
+import seedu.sgsafe.utils.exceptions.InvalidSavedCategoryException;
+import seedu.sgsafe.utils.exceptions.InvalidSavedDateException;
+import seedu.sgsafe.utils.exceptions.InvalidSavedFieldsException;
+
 import seedu.sgsafe.utils.ui.Display;
 import seedu.sgsafe.utils.ui.Parser;
+import seedu.sgsafe.utils.ui.Validator;
+
+import seedu.sgsafe.utils.settings.Settings;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +64,8 @@ public class Storage {
 
     /** The filename where cases are stored. */
     private final String filename;
+
+    private final Validator validator = new Validator();
 
     /**
      * Constructs a {@code Storage} object with the specified filename.
@@ -91,10 +105,12 @@ public class Storage {
         Map<String, String> fields = new HashMap<>();
         for (String field : saveString.split("\\|")) {
             String[] splitField = field.split(":", 2);
-            String key = splitField[0];
-            String value = (splitField[1].isEmpty()) ? null : splitField[1];
-            if (value != null) {
-                fields.put(key, value);
+            if(splitField.length == 2) {
+                String key = splitField[0];
+                String value = (splitField[1].isEmpty()) ? null : splitField[1].strip();
+                if (value != null) {
+                    fields.put(key, value);
+                }
             }
         }
         return fields;
@@ -112,24 +128,56 @@ public class Storage {
     public Case getCaseFromSaveString(String line) {
         Map<String, String> fields = getFields(line);
 
+        // List of required flags
+        List<String> requiredFlags = List.of(
+                "category",
+                "title",
+                "date",
+                "info",
+                "is-deleted",
+                "is-open",
+                "created-at",
+                "updated-at"
+        );
+
+        if(!validator.haveAllRequiredFlags(fields, requiredFlags)) {
+            throw new InvalidSavedFieldsException(line);
+        }
+
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(getSaveDatePattern());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(getSaveDateTimePattern());
 
+        String id = CaseManager.generateHexId();
+
         // Parse base attributes
-        String id = fields.get("id");
         String title = fields.get("title");
-        LocalDate date = LocalDate.parse(fields.get("date"), dateFormatter);
         String info = fields.get("info");
         String victim = fields.get("victim");
         String officer = fields.get("officer");
         boolean isDeleted = fields.get("is-deleted").equals("1");
         boolean isOpen = fields.get("is-open").equals("1");
         String category = fields.get("category");
-        LocalDateTime createdAt = LocalDateTime.parse(fields.get("created-at"), dateTimeFormatter);
-        LocalDateTime updatedAt = LocalDateTime.parse(fields.get("updated-at"), dateTimeFormatter);
+
+        LocalDate date;
+        LocalDateTime createdAt;
+        LocalDateTime updatedAt;
+        try {
+            date = LocalDate.parse(fields.get("date"), dateFormatter);
+            createdAt = LocalDateTime.parse(fields.get("created-at"), dateTimeFormatter);
+            updatedAt = LocalDateTime.parse(fields.get("updated-at"), dateTimeFormatter);
+        } catch (DateTimeParseException e) {
+            throw new InvalidSavedDateException(line);
+        }
+
+        CaseCategory caseCategory;
+        try {
+            caseCategory = CaseCategory.valueOf(category);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidSavedCategoryException(line);
+        }
 
         // Instantiate the appropriate subclass of Case
-        Case newCase = switch (CaseCategory.valueOf(category)) {
+        Case newCase = switch (caseCategory) {
         case BURGLARY -> new BurglaryCase(id, title, date, info, victim, officer);
         case SCAM -> new ScamCase(id, title, date, info, victim, officer);
         case THEFT -> new TheftCase(id, title, date, info, victim, officer);
@@ -170,6 +218,34 @@ public class Storage {
         Settings.setDateTimeFormat(settings[2].strip());
     }
 
+    private void parseLine(String line) {
+        if (line.startsWith(SETTING_PREFIX)) {
+            ArrayList<String> settingResult = new ArrayList<>();
+            settingResult.add("Loading settings from save...");
+
+            try {
+                loadSettings(line);
+            } catch (IllegalArgumentException e) {
+                settingResult.add("Invalid settings format. " +
+                        "Some of them could not be loaded from the save file.");
+            }
+
+            settingResult.add("Date input format was set to: " + Settings.getInputDateFormat());
+            settingResult.add("Date output format was set to: " + Settings.getOutputDateFormat());
+            settingResult.add("Timestamp output format was set to: " + Settings.getDateTimeFormat());
+
+            Display.printMessage(settingResult.toArray(new String[0]));
+        } else if (!line.trim().isEmpty()) {
+            try {
+                Case newCase = getCaseFromSaveString(line);
+                CaseManager.addCase(newCase);
+            } catch (InvalidSaveStringException e) {
+                Display.printMessage(e.getErrorMessage());
+                CaseManager.addCase(new InvalidCase(line));
+            }
+        }
+    }
+
     /**
      * Loads all cases from the file into the {@link CaseManager}.
      * <p>
@@ -182,25 +258,7 @@ public class Storage {
             try (Scanner s = new Scanner(file)) {
                 while (s.hasNextLine()) {
                     String line = s.nextLine();
-                    if (line.startsWith(SETTING_PREFIX)) {
-                        ArrayList<String> settingResult = new ArrayList<>();
-                        settingResult.add("Loading settings from save...");
-
-                        try {
-                            loadSettings(line);
-                        } catch (IllegalArgumentException e) {
-                            settingResult.add("Invalid settings format. " +
-                                    "Some of them could not be loaded from the save file.");
-                        }
-
-                        settingResult.add("Date input format was set to: " + Settings.getInputDateFormat());
-                        settingResult.add("Date output format was set to: " + Settings.getOutputDateFormat());
-                        settingResult.add("Timestamp output format was set to: " + Settings.getDateTimeFormat());
-                        Display.printMessage(settingResult.toArray(new String[0]));
-                    } else if (!line.trim().isEmpty()) {
-                        Case newCase = getCaseFromSaveString(line);
-                        CaseManager.addCase(newCase);
-                    }
+                    parseLine(line);
                 }
             } catch (IOException e) {
                 System.out.println("Something went wrong while loading from the save file: " + e.getMessage());

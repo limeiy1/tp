@@ -384,8 +384,7 @@ public abstract class Case {
     public String toSaveString() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(Storage.getSaveDatePattern());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(Storage.getSaveDateTimePattern());
-        return "id:" + this.id
-                + "|category:" + this.category.toString()
+        return "category:" + this.category.toString()
                 + "|title:" + (this.title == null ? "" : this.title)
                 + "|date:" + (this.date == null ? "" : this.date.format(dateFormatter))
                 + "|info:" + (this.info == null ? "" : this.info)

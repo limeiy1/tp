@@ -26,6 +26,8 @@ activate cmd COMMAND_COLOR
 
 cmd -[COMMAND_COLOR]> cmd : someSelfFunction()
 activate cmd COMMAND_COLOR_T1
+cmd --[COMMAND_COLOR]> cmd :
+
 deactivate cmd
 
 participant ":CaseManager" as caseMgr CASEFILE_COLOR
@@ -51,7 +53,11 @@ deactivate display
 
 deactivate display UI_COLOR
 
-cmd --[MAIN_COLOR]> sgsafe :
+cmd --[MAIN_COLOR]> sgsafe : return
+
+'Hidden arrow to position the destroy marker below the end of the activation bar.
+deactivate cmd
+cmd -[HIDDEN]-> sgsafe
 
 destroy cmd
 

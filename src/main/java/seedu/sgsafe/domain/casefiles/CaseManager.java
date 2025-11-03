@@ -19,6 +19,9 @@ import seedu.sgsafe.utils.exceptions.InvalidEditFlagException;
 public class CaseManager {
 
     private static final Logger logger = Logger.getLogger(CaseManager.class.getName());
+    // Format string for generating case IDs
+    private static final String CASE_ID_FORMAT = "%06x";
+
     /**
      * The central list of case records maintained by the application.
      * Each {@link Case} represents a single incident or report.
@@ -225,4 +228,28 @@ public class CaseManager {
         }
         return caseToRead.getReadCaseDisplay();
     }
+
+    // @@author xelisce
+
+    /**
+     * Generates a unique 6-character hexadecimal ID for a new case.
+     * <p>
+     * The ID is derived from the current size of {@code caseList}, formatted as a
+     * zero-padded lowercase hexadecimal string. This ensures compact, readable,
+     * and collision-free identifiers as long as cases are not removed or reordered.
+     * <p>
+     * Example outputs:
+     * <ul>
+     *   <li>{@code 000000} — first case</li>
+     *   <li>{@code 00000a} — tenth case</li>
+     *   <li>{@code 0000ff} — 256th case</li>
+     * </ul>
+     *
+     * @return a 6-character hexadecimal string representing the new case ID
+     */
+    public static String generateHexId() {
+        int raw = getCaseListSize();
+        return String.format(CASE_ID_FORMAT, raw); // zero-padded 6-digit hex
+    }
+
 }

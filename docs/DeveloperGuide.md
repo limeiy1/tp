@@ -11,13 +11,14 @@
     - [Command Component](#command-component)
     - [Storage Component](#storage-component)
     - [Commons](#Commons)
-4. [Appendix A: Product Scope](#appendix-a-product-scope)
+4. [Implementation](#implementation)
+5. [Appendix A: Product Scope](#appendix-a-product-scope)
     - [Target user profile](#target-user-profile)
     - [Value proposition](#value-proposition)
-5. [Appendix B: User Stories](#appendix-b-user-stories)
-6. [Appendix C: Non-Functional Requirements](#appendix-c-non-functional-requirements)
-7. [Appendix D: Glossary](#appendix-d-glossary)
-8. [Appendix E: Instructions for Manual Testing](#appendix-e-instructions-for-manual-testing)
+6. [Appendix B: User Stories](#appendix-b-user-stories)
+7. [Appendix C: Non-Functional Requirements](#appendix-c-non-functional-requirements)
+8. [Appendix D: Glossary](#appendix-d-glossary)
+9. [Appendix E: Instructions for Manual Testing](#appendix-e-instructions-for-manual-testing)
 
 ---
 
@@ -191,14 +192,18 @@ subclass.
 Each different command is represented by a subclass of the abstract `Command` class, encapsulating the logic for that
 specific command. In addition, each command class may have its own attributes to store parameters needed for execution.
 
-The following diagram illustrates the structure of the command component and some of the noteworthy methods in the
-commands.
-
-> ℹ️ Note: Only non-trivial fields and methods are shown in the above diagram.\
-> ℹ️ UML Info: Due to the limitation of plantUML, the diagram is shown top down for best visibility, instead of the
-> usual left to right.
+The following diagram illustrates the structure of the command component that interacts and edit the cases
+and some of the noteworthy methods in the commands. 
 
 ![CommandClassDiagram](images/CommandClassDiagram.png)
+
+The following diagram illustrates the structure of the command component that does not edit the cases but plays an important
+supporting role in the application.
+
+![SupportingCommandClassDiagram](images/SupportingCommandClassDiagram.png)
+
+> ℹ️ Note: Only non-trivial fields and methods are shown in the above diagram.\
+
 
 #### Key Classes
 
@@ -298,13 +303,59 @@ Here are some key points about the exception class structure:
 - Since `InvalidCommandException` inherits from Java's Exception class, we can treat this as a standard checked
   exception and catch it using try-catch blocks. It can also be implicitly upcasted to Exception type.
 
-[//]: # ()
 
-[//]: # (---)
 
-[//]: # ()
+---
 
-[//]: # (## Implementation)
+## Implementation
+This section describes some noteworthy implementation details of SGSafe.
+
+### Addition of Cases
+
+The add command allows users to create new cases by providing required details such as title, category, date, and info.
+This implementation showcases the parsing and validation processes involved in command execution, ensuring data
+integrity before adding a case to the system.
+
+**Introduction**\
+The add command follows a specific structure:
+`add --category CATEGORY --title TITLE --date DATE --info INFO [--victim VICTIM] [--officer OFFICER]`
+This is the structure that we implement in our code. As you can see, the command requires some mandatory flags and
+allows for optional ones. The parsing and validation methods need to ensure that this is checked.
+
+When a user inputs an add command, the Parser class handles the initial processing:
+1. The `parseInput()` method extracts the command keyword ("add") and delegates to `parseAddCommand()`.
+2. `parseAddCommand()` uses Validator to check for if input is empty. If so it will throw an error.
+3. Next, it will perform `extractFlagValues(String input)`, where the flags will be extracted into its flag and value (
+   stored in a map).
+4. `extractFlagValues(String input)` will check for incorrect usage of flags and throw errors accordingly. Some incorrect usage include:
+    - Missing values for flags (e.g., `--title` without a title)
+    - Duplicate flags
+    - Input length exceeding maximum allowed length
+5. Next, `parseAddCommand()` method will make use of Validator to check that all required flags (--title, --category, --date,
+   --info) are present. It will also check for any invalid flags that are not recognized by the system.
+6. For the add command, the date format must match the pattern set in the Settings. We will use DateFormatter class's
+   `parseDate(...)` method to parse and validate the date format.
+7. If validation passes, it creates an AddCommand object with the parsed arguments.
+
+The sequence diagram below illustrates the parsing and validation process for the add command:
+![Sequence Diagram of Parsing Add Command](images/SequenceDiagramAddCommandParse.png)
+
+Once parsed and validated, the AddCommand.execute() method:
+1. Generates a unique case ID using `generateHexId()`.
+2. Creates a new Case object (or subclass based on category) with the provided details. Upon creation, the Case
+   constructor:
+    - Update `createdAt` with the current timestamp.
+    - Update `updatedAt` with the current timestamp.
+3. Calls `CaseManager.addCase()` to store the case.
+4. Prints a confirmation message to the user. This requires calling `newCase.getDisplayLine()` to get a formatted string of the case
+   details.
+
+The sequence diagram below illustrates the execution process for the add command:
+![Sequence Diagram of Executing Add Command](images/SequenceDiagramAddCommandExecute.png)
+
+The handleUserCommand() method in the main application loop will then invoke the `Storage` object to persist the new case.
+
+
 
 ---
 
@@ -351,7 +402,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ## Appendix C: Non-Functional Requirements
 
-- Should work on any mainstream OS as long as it has Java 17 or above installed.
+- Should work on any mainstream OS as long as it has Java 17 installed.
 - Should be able to hold up to 1000 cases without a noticeable sluggishness in performance for typical usage.
 - A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be
   able to accomplish most of the tasks faster using commands than using the mouse.
@@ -376,7 +427,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ## Appendix E: Instructions for manual testing
 
-Given below are the instructions for manual testing of SGSafe.
+Given below are the instructions for manual testing of SGSafe. Please note that NOT all commands have been listed.
 
 ### Launch and Startup
 
@@ -409,11 +460,11 @@ Given below are the instructions for manual testing of SGSafe.
     - Expected Output: All cases being listed out, but there is only information about status, category, ID, date,
       title.
 
-2. Test case: List case with status filter
+2. Test case: List cases with status filter
     - Input: `list --status closed`
     - Expected Output: All the cases that have been closed will be listed out.
     -
-3. Test case: List case with verbose mode
+3. Test case: List cases with verbose mode
     - Input: `list --mode verbose`
     - Expected Output: More information will be shown per case.
 
@@ -470,4 +521,4 @@ Given below are the instructions for manual testing of SGSafe.
     - Expected: Previously added case is still present after restart.
 
 The above test cases are not exhaustive and meant to cover the main functionalities of SGSafe.
-Please see the user guide for more details on how to use SGSafe and explore additional commands and features.
+Please see the [user guide](https://ay2526s1-cs2113-w13-3.github.io/tp/UserGuide.html) for more details on how to use SGSafe and explore additional commands and features.

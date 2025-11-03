@@ -2,7 +2,7 @@
 hide circle
 skinparam classAttributeIconSize 0
 scale max 1024 width
-left to right direction
+'left to right direction
 
 ' Abstract base class
 abstract class "{abstract} \n Command" {
@@ -12,7 +12,7 @@ abstract class "{abstract} \n Command" {
 }
 
 ' Command Type Enum
-enum CommandType <<enumeration>> {
+enum "{enumeration} \n CommandType"  {
     ADD
     EDIT
     DELETE
@@ -20,35 +20,22 @@ enum CommandType <<enumeration>> {
     LIST
     OPEN
     CLOSE
+    FIND
     SETTING
     HELP
     BYE
 }
 
-' Setting Type Enum
-enum "{enumeration} \n SettingType"  {
-    DATEINPUT
-    DATEOUTPUT
-}
-
-' Case Listing Mode Enum
-enum "{enumeration} \n CaseListingMode" {
-    ALL
-    DEFAULT
-    OPEN_ONLY
-    CLOSED_ONLY
-}
 
 ' Concrete Command Classes
 class AddCommand {
-
     - String caseTitle
     - String caseCategory
     - LocalDate caseDate
     - String caseInfo
     - String caseVictim
     - String caseOfficer
-    + AddCommand(caseCategory, caseTitle, caseDate, \n caseInfo, caseVictim, caseOfficer)
+    + AddCommand(String, String, LocalDate, String, String, String)
     + execute(): void
     - generateHexId(): String
 }
@@ -56,86 +43,53 @@ class AddCommand {
 class EditCommand {
     - String caseId
     - newFlagValues : Map<String, Object>
-    + EditCommand(caseId, newFlagValues)
+    + EditCommand(String, Map<String, Object>)
     + execute(): void
 }
 
 class EditPromptCommand {
     - String caseId
-    + EditPromptCommand(caseId)
+    + EditPromptCommand(String)
     + execute(): void
 }
 
 class DeleteCommand {
     - String caseId
-    + DeleteCommand(caseId)
+    + DeleteCommand(String)
     + execute(): void
 }
 
-class ReadCommand {
-    - String caseId
-    + ReadCommand(caseId)
-    + execute(): void
-}
-
-class ListCommand {
-    - CaseListingMode listingMode
-    - boolean isVerbose
-    + ListCommand(mode, isVerbose)
-    + execute(): void
-    - generateListTabTableHeaderMessage(): String
-    - formatCases(): List<String>
-    - filterCasesByMode(): ArrayList<Case>
-    - generateCaseCountMessage(): String
-    getCaseDescriptions(): String[]
-}
 
 class OpenCommand {
     - String caseId
-    + OpenCommand(caseId)
+    + OpenCommand(String)
     + execute(): void
 }
 
 class CloseCommand {
     - String caseId
-    + CloseCommand(caseId)
+    + CloseCommand(String)
     + execute(): void
 }
 
-class SettingCommand {
-    - SettingType settingType
-    - String newDateFormat
-    + SettingCommand(settingType, newDateFormat)
-    + execute(): void
-}
 
-class HelpCommand {
-    + HelpCommand()
-    + execute(): void
-}
-
-class ByeCommand {
-    + ByeCommand()
-    + execute(): void
-}
 
 ' Inheritance relationships
 "{abstract} \n Command" <|-- AddCommand
 "{abstract} \n Command" <|-- EditCommand
 "{abstract} \n Command" <|-- EditPromptCommand
 "{abstract} \n Command" <|-- DeleteCommand
-"{abstract} \n Command" <|-- ReadCommand
-"{abstract} \n Command" <|-- ListCommand
 "{abstract} \n Command" <|-- OpenCommand
 "{abstract} \n Command" <|-- CloseCommand
-"{abstract} \n Command" <|-- SettingCommand
-"{abstract} \n Command" <|-- HelpCommand
-"{abstract} \n Command" <|-- ByeCommand
 
 ' Associations with enums
-"{abstract} \n Command" ..> CommandType
-SettingCommand ..> "{enumeration} \n SettingType"
-ListCommand ..> "{enumeration} \n CaseListingMode"
+"{abstract} \n Command" ..> "{enumeration} \n CommandType"
+AddCommand ..> "{enumeration} \n CommandType"
+EditCommand ..> "{enumeration} \n CommandType"
+EditPromptCommand ..> "{enumeration} \n CommandType"
+DeleteCommand ..> "{enumeration} \n CommandType"
+OpenCommand ..> "{enumeration} \n CommandType"
+CloseCommand ..> "{enumeration} \n CommandType"
 
 ' Notes
 note right of "{abstract} \n Command"
@@ -145,25 +99,12 @@ note right of "{abstract} \n Command"
     the execute() method.
 end note
 
-note right of CommandType
+note right of "{enumeration} \n CommandType"
     Defines all supported
     command types in the system
 end note
 
-note bottom of ListCommand
-    Filters case listings based
-    on the specified mode
-end note
 
-note bottom of SettingCommand
-    Modifies application settings
-    based on the setting type
-end note
-
-note bottom of ReadCommand
-    To view all details of a specific case
-    that is identified by its unique ID
-end note
 
 
 @enduml
