@@ -4,23 +4,25 @@
 participant ":Storage" as S STORAGE_COLOR
 participant "<<Class>>\n:CaseManager" as CM CASEFILE_COLOR
 participant ":Case" as C CASEFILE_COLOR
+participant "<<Class>>\n:Settings" as SET UI_COLOR
 
 -[MAIN_COLOR]> S : saveToFile()
 activate S STORAGE_COLOR_T1
 
-S -[STORAGE_COLOR]> CM : getCaseManager
-activate CM CASEFILE_COLOR_T1
-return caseList
-deactivate CM
+    S -[STORAGE_COLOR]> SET : get each date format
+    activate SET UI_COLOR_T1
+    return
 
-loop for cases in caseList
-S -[STORAGE_COLOR]> C : getSaveString()
-activate C CASEFILE_COLOR_T1
-return save string
-deactivate C
-end loop
+    S -[STORAGE_COLOR]> CM : getCaseManager
+    activate CM CASEFILE_COLOR_T1
+    return caseList
 
-<[MAIN_COLOR]-- S
-deactivate S
+    loop for cases in caseList
+        S -[STORAGE_COLOR]> C : getSaveString()
+        activate C CASEFILE_COLOR_T1
+        return save string
+    end loop
+
+return
 
 @enduml

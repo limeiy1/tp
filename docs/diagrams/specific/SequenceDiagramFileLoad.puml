@@ -6,41 +6,60 @@ participant ":Storage" as S STORAGE_COLOR
 participant "<<Class>>\n:CaseManager" as CM CASEFILE_COLOR
 participant ":Case" as C CASEFILE_COLOR
 participant "<<Class>>\n:Parser" as P UI_COLOR
+participant "<<Class>>\n:Settings" as set UI_COLOR
 
 -[MAIN_COLOR]> S : loadCaseManager()
 activate S STORAGE_COLOR_T1
+    opt save file exists
+        loop for line in savefile
+            S -[STORAGE_COLOR]> S : parseLine(line)
+            activate S STORAGE_COLOR_T2
 
-opt save file exists
-    loop for line in savefile
-        S -[STORAGE_COLOR]> S : getCaseFromSaveString(line)
-        activate S STORAGE_COLOR_T2
-        create C
-        S -[STORAGE_COLOR]> C
-        activate C CASEFILE_COLOR_T1
-        return new case
-        deactivate C
+            alt settings save line
 
-        S -[STORAGE_COLOR]> P : convertFlagValueTypes(...)
-        activate P UI_COLOR_T1
-        return
-        deactivate P
-        S -[STORAGE_COLOR]> C : update(fields)
-        activate C CASEFILE_COLOR_T1
-        return
-        deactivate C
-        S -[STORAGE_COLOR]> C : inititialiseMetadataFromSave(...)
-        activate C CASEFILE_COLOR_T1
-        return
-        deactivate C
-        S --[STORAGE_COLOR]> S
-        deactivate S
-        S -[STORAGE_COLOR]> CM : addCase(new case)
-        activate CM CASEFILE_COLOR_T1
-        return
-        deactivate CM
-    end loop
-end opt
-<[MAIN_COLOR]-- S
-deactivate S
+                S -[STORAGE_COLOR]> S :loadSettings(line)
+                activate S STORAGE_COLOR_T3
+                    S -[STORAGE_COLOR]> set : set each date format
+                    activate set UI_COLOR_T1
+                    return
+                return
+
+            else case save line
+
+                S -[STORAGE_COLOR]> S : getCaseFromSaveString(line)
+                activate S STORAGE_COLOR_T3
+
+                    S -[STORAGE_COLOR]> CM : generateHexId
+                    activate CM CASEFILE_COLOR_T1
+                    return
+
+                    create C
+                    S -[STORAGE_COLOR]> C
+                    activate C CASEFILE_COLOR_T1
+                    return new case
+
+                    S -[STORAGE_COLOR]> P : convertFlagValueTypes(...)
+                    activate P UI_COLOR_T1
+                    return
+
+                    S -[STORAGE_COLOR]> C : update(fields)
+                    activate C CASEFILE_COLOR_T1
+                    return
+
+                    S -[STORAGE_COLOR]> C : inititialiseMetadataFromSave(...)
+                    activate C CASEFILE_COLOR_T1
+                    return
+
+                return new case
+
+                S -[STORAGE_COLOR]> CM : addCase(new case)
+                activate CM CASEFILE_COLOR_T1
+                return
+
+            end alt
+            return
+        end loop
+    end opt
+return
 
 @enduml
