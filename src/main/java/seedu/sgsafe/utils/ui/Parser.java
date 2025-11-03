@@ -408,34 +408,72 @@ public class Parser {
      * </ol>
      */
     private static Command parseEditCommand(String remainder) {
+        validateNonEmpty(remainder);
+
+        if (isSingleArgument(remainder)) {
+            return buildEditPromptCommand(remainder);
+        }
+
+        return buildEditCommandWithFlags(remainder);
+    }
+
+    /* ──────────── parseEdit Helpers ──────────── */
+
+
+    private static void validateNonEmpty(String remainder) {
         if (remainder.isEmpty()) {
             throw new InvalidEditCommandException();
         }
+    }
 
-        int firstSpaceIndex = remainder.indexOf(" ");
+    private static boolean isSingleArgument(String input) {
+        return input.indexOf(" ") == -1;
+    }
 
-        // Case 1: Only case ID is provided (e.g. "edit 000000")
-        if (firstSpaceIndex == -1) {
-            if (!validator.isValidCaseId(remainder)) {
-                throw new InvalidCaseIdException();
-            }
-            return new EditPromptCommand(remainder);
-        }
+    /**
+     * Builds an EditPromptCommand to show valid edit flags for a case.
+     * @param caseId
+     * @return EditPromptCommand
+     */
+    private static Command buildEditPromptCommand(String caseId) {
+        validateCaseId(caseId);
+        return new EditPromptCommand(caseId);
+    }
 
-        // Case 2: Flags provided together with case ID (e.g. "edit 000000 --location 123 Street")
-        String caseId = remainder.substring(0, firstSpaceIndex);
+    /**
+     * Builds an EditCommand to edit a case with provided flags.
+     * @param input the input string containing caseId and flags
+     * @return EditCommand
+     */
+    private static Command buildEditCommandWithFlags(String input) {
+        String caseId = extractCaseId(input);
+        validateCaseId(caseId);
+
+        String flags = extractFlags(input);
+        validateFlagSyntax(flags);
+
+        Map<String, String> flagValues = extractFlagValues(flags);
+        Map<String, Object> typedFlagValues = convertFlagValueTypes(flagValues);
+
+        return new EditCommand(caseId, typedFlagValues);
+    }
+
+    private static String extractCaseId(String input) {
+        return input.substring(0, input.indexOf(" "));
+    }
+
+    private static String extractFlags(String input) {
+        return input.substring(input.indexOf(" ") + 1).trim();
+    }
+
+    private static void validateCaseId(String caseId) {
         if (!validator.isValidCaseId(caseId)) {
             throw new InvalidCaseIdException();
         }
+    }
 
-        String replacements = remainder.substring(firstSpaceIndex + 1).trim();
-
-        // Check if replacements start with --
-        if (replacements.startsWith("--")) {
-            Map<String, String> flagValues = extractFlagValues(replacements);
-            Map<String, Object> typedFlagValues = convertFlagValueTypes(flagValues);
-            return new EditCommand(caseId, typedFlagValues);
-        } else {
+    private static void validateFlagSyntax(String flags) {
+        if (!flags.startsWith("--")) {
             logger.log(Level.WARNING, "Incorrect flag usage detected");
             throw new IncorrectFlagException();
         }
@@ -449,7 +487,7 @@ public class Parser {
      * @throws InvalidIntegerException if a numerical flag value is non-numeric or negative
      */
     public static Map<String, Object> convertFlagValueTypes(Map<String, String> rawValues) {
-        logger.fine("Starting flag value type conversion.");
+        logger.log(Level.FINER, "Starting flag value type conversion.");
 
         Map<String, Object> typedValues = new HashMap<>();
         LocalDate parsedDate;
@@ -495,7 +533,7 @@ public class Parser {
             }
         }
 
-        logger.fine("Finished flag value type conversion.");
+        logger.log(Level.FINER, "Finished flag value type conversion.");
         return typedValues;
     }
 
