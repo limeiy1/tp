@@ -1,17 +1,16 @@
 package seedu.sgsafe.utils.command;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.sgsafe.domain.casefiles.Case;
 import seedu.sgsafe.domain.casefiles.CaseManager;
 import seedu.sgsafe.domain.casefiles.type.violent.RobberyCase;
-import seedu.sgsafe.utils.exceptions.CaseCannotBeEditedException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 public class EditPromptCommandTest {
 
@@ -60,7 +59,8 @@ public class EditPromptCommandTest {
     }
 
     @Test
-    void execute_caseFoundButClosed_throwsCaseCannotBeEditedException() {
+    void execute_caseFoundButClosed_printsCannotBeEditedMessage() {
+
         LocalDate date = LocalDate.of(2025, 10, 10);
         Case closedCase = new RobberyCase("000001", "Robbery", date, "Suspect masked", "Bob", "Officer Tan");
         CaseManager.addCase(closedCase);
@@ -68,6 +68,16 @@ public class EditPromptCommandTest {
 
         EditPromptCommand cmd = new EditPromptCommand("000001");
 
-        assertThrows(CaseCannotBeEditedException.class, cmd::execute);
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        cmd.execute();
+
+        System.setOut(originalOut);
+
+        String output = outContent.toString();
+        assertTrue(output.contains("has been closed"),
+                "Expected error message when editing a closed case.");
     }
 }

@@ -1,26 +1,15 @@
 package seedu.sgsafe.utils.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.ByteArrayOutputStream;
-
 import java.io.PrintStream;
 import java.time.LocalDate;
-import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 
 import seedu.sgsafe.domain.casefiles.Case;
 import seedu.sgsafe.domain.casefiles.CaseManager;
 import seedu.sgsafe.domain.casefiles.type.traffic.SpeedingCase;
-import seedu.sgsafe.utils.exceptions.CaseNotFoundException;
-import seedu.sgsafe.utils.exceptions.InvalidFormatStringException;
-import seedu.sgsafe.utils.ui.Parser;
 
 
 public class ReadCommandTest {
