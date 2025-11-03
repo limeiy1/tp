@@ -226,7 +226,8 @@ Example output:
  ```
   Case found: [Open]   Traffic accident 000001 05/06/2018 Car accident
 
-  Fields that can be edited: --title, --date, --info, --victim, --officer, --vehicle-type, --vehicle-plate, --road-name
+  Fields that can be edited: --title, --date, --info, --victim, --officer, 
+  --vehicle-type, --vehicle-plate, --road-name
 ```
 
 2. `edit 000001 --title Drunk Driving --road-name Adam Road --date 03/04/2025` : edits the title, road name, and date of the case

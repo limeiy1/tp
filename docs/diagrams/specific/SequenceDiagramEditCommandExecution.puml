@@ -1,0 +1,43 @@
+@startuml
+!include ../style.puml
+skinparam ArrowFontStyle plain
+
+participant ":SGSafe" as sgsafe MAIN_COLOR
+participant ":EditCommand" as cmd COMMAND_COLOR
+participant ":CaseManager" as caseMgr CASEFILE_COLOR
+participant ":Case" as case CASEFILE_COLOR
+participant ":Display" as display UI_COLOR
+
+sgsafe -> cmd : execute()
+cmd -> caseMgr : editCase(...)
+caseMgr -> caseMgr : getCaseById(Id)
+
+alt case == null
+    caseMgr --> cmd : CaseNotFoundException
+    else else
+        caseMgr -> case : isOpen()
+        case --> caseMgr
+
+    alt isOpen == false
+        caseMgr --> cmd : CaseCannotBeEditedException
+    else else
+        caseMgr --> caseMgr :
+end
+end
+
+caseMgr -> caseMgr : validateEditFlags(...)
+caseMgr -> case : getValidEditFlags()
+        case --> caseMgr
+
+alt invalidFlags.isEmpty() == false
+                caseMgr --> cmd : InvalidEditFlagException
+            else else
+                caseMgr -> case : update(...)
+                caseMgr -> case : getDisplayLine()
+                case --> caseMgr
+                caseMgr --> cmd : displayLine
+            end
+
+cmd -> display : printMessage(...)
+destroy cmd
+@enduml

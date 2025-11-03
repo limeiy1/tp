@@ -355,7 +355,66 @@ The sequence diagram below illustrates the execution process for the add command
 
 The handleUserCommand() method in the main application loop will then invoke the `Storage` object to persist the new case.
 
+---
 
+### Editing Cases
+
+The `edit` command enables users to modify an existing case’s fields such as `title`, `date` and `victim`. Additionally, any category-specific fields, e.g., `speed-limit` for the `speeding` category, can only be filled in with the edit command.
+
+The command supports two modes:
+
+| Input Format | Behaviour |
+|-------------|----------|
+| `edit <caseId>` | Displays editable fields for the selected case |
+| `edit <caseId> --flag value` | Directly updates specified fields |
+
+Only **open cases** can be edited and only **valid edit flags** are allowed.
+
+##### Workflow Summary
+The Edit command is implemented across `Parser`, `EditCommand`, `CaseManager`, and `Case` classes.
+
+##### Parsing and Command Creation
+
+When a user inputs an edit command, the `Parser` class handles the initial processing:
+
+- `parseInput()` extracts the command keyword (`"edit"`) and passes the rest of the string to `parseEditCommand()`.
+- `parseEditCommand()` first checks whether the remainder contains only a case ID.
+    - If so, it validates the case ID using `Validator` and creates an `EditPromptCommand`, which displays the list of editable fields for that case, for the user to reference when editing with flags.
+    - Else if flags are present, it splits the remainder into the case ID and the flag section. The case ID is validated, and the flag section is passed to `extractFlagValues(...)`, which parses `--flag value` pairs into a map.
+- `extractFlagValues(String input)` is responsible for splitting the raw string into individual flags, detecting incorrect usage (such as missing values, duplicate flags, or overly long input), and returning a `Map<String, String>` of flag names to their raw values.
+- The raw values are then passed to `convertFlagValueTypes(Map<String, String> rawValues)`, which converts them into appropriate Java types (for example, parsing dates into `LocalDate` and numeric fields into `Integer` or `Double`).
+
+If all parsing and type conversion succeed, `parseEditCommand()` constructs an `EditCommand` with the case ID and the typed flag–value map.
+
+##### Case Validation and Update
+
+- When `EditCommand.execute()` is called, it calls  
+  `CaseManager.editCase(caseId, newFlagValues)`,  
+  where `newFlagValues` is the typed map created by the parser.
+
+Inside `CaseManager.editCase(String caseId, Map<String, Object> newFlagValues)`:
+
+1. It finds the target case using `getCaseById(caseId)`.  
+   If no case is found, it throws `CaseNotFoundException`.
+2. It checks if the case is open by calling `caseToEdit.isOpen()`.  
+   If the case is closed, it throws `CaseCannotBeEditedException`.
+3. It checks that all edit flags are valid by comparing the map keys with `caseToEdit.getValidEditFlags()`. 
+   If any flags are not allowed, it throws `InvalidEditFlagException` with the list of invalid flags.
+4. If all checks pass, it calls `caseToEdit.update(newFlagValues)`. 
+   This updates the relevant fields and refreshes the `updatedAt` timestamp.
+
+`editCase(...)` then calls `caseToEdit.getDisplayLine()` and returns the updated one-line summary of the case to the caller.
+
+##### User Feedback
+
+Back in `EditCommand.execute()`: 
+
+- If `editCase(...)` returns successfully, `EditCommand` displays a confirmation along with the updated summary of the case. As some fields do not show up in the summary view, the user may use the `read` command if they want to review changes.
+- If any exception is thrown (such as `CaseNotFoundException` or `InvalidEditFlagException`), `execute()` catches it and displays an error message explaining why the edit failed.
+
+#### Illustration
+Below is a sequence diagram that illustrates the interaction between these classes after going through parser.
+![SequenceDiagramEditCommandExecution.png](images/SequenceDiagramEditCommandExecution.png)
 
 ---
 
