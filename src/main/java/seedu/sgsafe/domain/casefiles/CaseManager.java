@@ -3,7 +3,10 @@ package seedu.sgsafe.domain.casefiles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import seedu.sgsafe.SGSafe;
 import seedu.sgsafe.utils.exceptions.CaseAlreadyClosedException;
 import seedu.sgsafe.utils.exceptions.CaseCannotBeEditedException;
 import seedu.sgsafe.utils.exceptions.CaseAlreadyOpenException;
@@ -17,6 +20,7 @@ import seedu.sgsafe.utils.exceptions.InvalidEditFlagException;
  */
 public class CaseManager {
 
+    private static final Logger logger = Logger.getLogger(CaseManager.class.getName());
     /**
      * The central list of case records maintained by the application.
      * Each {@link Case} represents a single incident or report.
@@ -49,10 +53,19 @@ public class CaseManager {
      * @return the Case with the matching ID, or null if not found
      */
     public static Case getCaseById(String id) {
-        return caseList.stream()
-                .filter(c -> (c.getId().equals(id.toLowerCase()) && !c.isDeleted()))
+        logger.log(Level.FINE, "Attempt to edit closed case: " + id);
+        String lookupId = id.toLowerCase();
+
+        Case result = caseList.stream()
+                .filter(c -> c.getId().equals(lookupId))
+                .filter(c -> !c.isDeleted())
                 .findFirst()
                 .orElse(null);
+
+        if (result == null) {
+            logger.log(Level.FINE, "No case found: " + id);
+        }
+        return result;
     }
     //@@author
 
@@ -113,6 +126,7 @@ public class CaseManager {
         }
 
         if (!caseToEdit.isOpen()) {
+            logger.log(Level.WARNING, "Attempt to edit closed case: " + caseId);
             throw new CaseCannotBeEditedException(caseId);
         }
 
