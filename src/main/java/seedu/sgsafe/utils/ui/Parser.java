@@ -35,6 +35,7 @@ import seedu.sgsafe.utils.exceptions.InvalidAddCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidOpenCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidReadCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidSettingCommandException;
+import seedu.sgsafe.utils.exceptions.InvalidStatusException;
 import seedu.sgsafe.utils.exceptions.UnknownCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidDeleteCommandException;
 import  seedu.sgsafe.utils.exceptions.InvalidCharacterException;
@@ -220,7 +221,7 @@ public class Parser {
         case "open" -> CaseListingMode.OPEN_ONLY;
         case "closed" -> CaseListingMode.CLOSED_ONLY;
         case "all" -> CaseListingMode.ALL;
-        default -> throw new InvalidListCommandException();
+        default -> throw new InvalidStatusException();
         };
     }
 
@@ -654,7 +655,7 @@ public class Parser {
         List<String> requiredFlags = List.of("keyword");
 
         //  List of valid flags to be taken as input from the user
-        List<String> validFlags = List.of("keyword");
+        List<String> validFlags = List.of("keyword", "status");
 
 
         if (validator.inputIsEmpty(remainder)) {
@@ -668,7 +669,9 @@ public class Parser {
             throw new InvalidFindCommandException();
         }
 
-        return new FindCommand(flagValues.get("keyword"));
+        CaseListingMode listingMode = parseListStatus(flagValues.get("status"));
+
+        return new FindCommand(flagValues.get("keyword"), listingMode);
     }
 
     //@@ author

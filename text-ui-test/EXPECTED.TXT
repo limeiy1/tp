@@ -243,6 +243,34 @@
 	Please refer to the documentation for valid format patterns.
 	____________________________________________________________
 	____________________________________________________________
+	Your find command format is incorrect.
+	The correct format for a find command is
+	find --keyword KEYWORD [--status <open|closed>]
+	____________________________________________________________
+	____________________________________________________________
+	Your command format is incorrect.
+	There is an incorrect usage of flag. Use flags like --title TITLE
+	Please see which flag is required for this command.
+	____________________________________________________________
+	____________________________________________________________
+	A total of 1 case(s) found matching the keyword: "murder"
+	To view more details of a case, use the command: read CASE_ID
+	STATUS   CATEGORY         ID     DATE       TITLE
+	[Closed] Murder           000000 23-06-2020 Murder at Yishun
+	____________________________________________________________
+	____________________________________________________________
+	A total of 1 case(s) found matching the keyword: "murder"
+	To view more details of a case, use the command: read CASE_ID
+	STATUS   CATEGORY         ID     DATE       TITLE
+	[Closed] Murder           000000 23-06-2020 Murder at Yishun
+	____________________________________________________________
+	____________________________________________________________
+	Your list status flag is incorrect.
+	The correct format is:
+	--status <open|closed>
+	You may exclude this flag if you want to list all cases.
+	____________________________________________________________
+	____________________________________________________________
 	You currently have 2 cases in total
 	---
 	Note: Only very basic case details are shown here.

@@ -33,8 +33,8 @@ import seedu.sgsafe.utils.exceptions.InvalidIntegerException;
 import seedu.sgsafe.utils.exceptions.InvalidReadCommandException;
 
 import seedu.sgsafe.utils.exceptions.InvalidOpenCommandException;
-import seedu.sgsafe.utils.exceptions.InvalidListCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidSettingCommandException;
+import seedu.sgsafe.utils.exceptions.InvalidStatusException;
 import seedu.sgsafe.utils.exceptions.UnknownCommandException;
 import seedu.sgsafe.utils.settings.Settings;
 
@@ -123,7 +123,7 @@ class ParserTest {
 
     @Test
     void parseInput_listStatusInvalid_throwsListCommandException() {
-        assertThrows(InvalidListCommandException.class, () -> Parser.parseInput("list --status banana"));
+        assertThrows(InvalidStatusException.class, () -> Parser.parseInput("list --status banana"));
     }
 
     @Test
@@ -133,7 +133,7 @@ class ParserTest {
 
     @Test
     void parseInput_listStatusExtraArgs_throwsListCommandException() {
-        assertThrows(InvalidListCommandException.class, () -> Parser.parseInput("list --status open extra"));
+        assertThrows(InvalidStatusException.class, () -> Parser.parseInput("list --status open extra"));
     }
 
     // ----------- TESTS FOR EDIT COMMANDS ----------- //
