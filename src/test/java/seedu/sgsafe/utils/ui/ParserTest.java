@@ -28,6 +28,7 @@ import seedu.sgsafe.utils.exceptions.InvalidEditCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidCloseCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidDeleteCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidFormatStringException;
+import seedu.sgsafe.utils.exceptions.InvalidHelpCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidIntegerException;
 import seedu.sgsafe.utils.exceptions.InvalidReadCommandException;
 
@@ -176,6 +177,18 @@ class ParserTest {
     @Test
     void parseInput_negativeValueForVictimNumber_throwsInvalidIntegerException() {
         assertThrows(InvalidIntegerException.class, () -> Parser.parseInput("edit 000001 --number-of-victims -50"));
+    }
+
+    @Test
+    void parseInput_correctUseOfEditWithFlags_returnsEditCommand() {
+        Command command = Parser.parseInput("edit 000001 --title new title");
+        assertEquals(CommandType.EDIT, command.getCommandType());
+    }
+
+    @Test
+    void parseInput_correctUseOfEditWithoutFlag_returnsEditCommand() {
+        Command command = Parser.parseInput("edit 000001");
+        assertEquals(CommandType.EDIT, command.getCommandType());
     }
 
     // ----------- TESTS FOR CLOSE COMMANDS ----------- //
@@ -454,4 +467,16 @@ class ParserTest {
                         longValue));
     }
 
+    // ----------- TESTS FOR HELP COMMAND ----------- //
+
+    @Test
+    void parseInput_helpCommand_returnsHelpCommand() {
+        Command cmd = Parser.parseInput("help");
+        assertEquals(CommandType.HELP, cmd.getCommandType());
+    }
+
+    @Test
+    void parseInput_helpCommandWithExtraArgs_throwsInvalidHelpCommandException() {
+        assertThrows(InvalidHelpCommandException.class, () -> Parser.parseInput("help now"));
+    }
 }

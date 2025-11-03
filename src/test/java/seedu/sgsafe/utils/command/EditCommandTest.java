@@ -62,14 +62,17 @@ public class EditCommandTest {
     }
 
     @Test
-    void execute_invalidFlags_doesNotUpdateCase() {
-        Map<String, Object> updates = Map.of("wrongFlag", "Something");
+    void execute_invalidFlag_caseRemainsUnchanged() {
+        Map<String, Object> updates = Map.of("wrongFlag", "Value");
         EditCommand command = new EditCommand("000001", updates);
 
-        assertDoesNotThrow(command::execute);
-        Case unchangedCase = CaseManager.getCaseById("000001");
-        assertEquals("Robbery", unchangedCase.getTitle());
+        command.execute();
+        Case unchanged = CaseManager.getCaseById("000001");
+
+        assertEquals("Robbery", unchanged.getTitle());
+        assertEquals("Officer Tan", unchanged.getOfficer());
     }
+
 
     @Test
     void execute_invalidFlags_throwsInvalidEditFlagException() {
@@ -82,4 +85,24 @@ public class EditCommandTest {
         Map<String, Object> updates = Map.of("date", -20231010);
         assertThrows(Exception.class, () -> CaseManager.editCase("000001", updates));
     }
+
+    @Test
+    void execute_invalidFlag_printsInvalidFlagMessage() {
+        Map<String, Object> updates = Map.of("wrongFlag", "Value");
+        EditCommand command = new EditCommand("000001", updates);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream original = System.out;
+        System.setOut(new PrintStream(out));
+
+        try {
+            command.execute();
+        } finally {
+            System.setOut(original);
+        }
+
+        String output = out.toString().toLowerCase();
+        assertTrue(output.contains("not edited") && output.contains("invalid"));
+    }
+
 }
