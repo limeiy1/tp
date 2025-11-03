@@ -3,6 +3,7 @@ package seedu.sgsafe.utils.settings;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 /**
  * The `Settings` class provides utility methods to manage input and output date formats.
@@ -13,8 +14,11 @@ public class Settings {
     // Default date format used for input and output
     private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
 
+    // Default date-time format used for date and time representation
     private static final String DEAFULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
+    // Logger for logging purposes
+    private static final Logger logger = Logger.getLogger(Settings.class.getName());
 
     private static String inputDateFormat = DEFAULT_DATE_FORMAT;
 
@@ -79,6 +83,7 @@ public class Settings {
      */
     private static void validateDateFormat(String format) {
         if (format == null || format.isEmpty()) {
+            logger.warning("Date time format is null or empty.");
             throw new IllegalArgumentException();
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
@@ -96,6 +101,7 @@ public class Settings {
      */
     private static void validateDateTimeFormat(String format) {
         if (format == null || format.isEmpty()) {
+            logger.warning("Date time format is null or empty.");
             throw new IllegalArgumentException();
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);

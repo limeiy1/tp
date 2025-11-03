@@ -19,7 +19,7 @@ public abstract class PropertyCase extends Case {
     private String location;
 
     /** The estimated monetary damage caused by the incident. */
-    private Integer monetaryDamage;
+    private Double monetaryDamage;
 
     public PropertyCase(String id, String title, LocalDate date, String info, String victim, String officer) {
         super(id, title, date, info, victim, officer);
@@ -30,17 +30,19 @@ public abstract class PropertyCase extends Case {
         return location;
     }
 
-    public Integer getMonetaryDamage() {
+    public Double getMonetaryDamage() {
         return monetaryDamage;
     }
 
+    //@@author shennontay
     @Override
     public String[] getReadCaseDisplay() {
         List<String> displayList = getBaseDisplayLines();
 
-        CaseFormatter.addWrappedFieldForRead(displayList, "Location", this.location);
-        CaseFormatter.addWrappedFieldForRead(displayList, "Monetary Damage", String.valueOf(this.monetaryDamage));
+        String formattedMonetaryDamage = (monetaryDamage == null) ? "" : String.format("%.2f", monetaryDamage);
 
+        CaseFormatter.addWrappedFieldForRead(displayList, "Location", this.location);
+        CaseFormatter.addWrappedFieldForRead(displayList, "Monetary Damage", formattedMonetaryDamage);
         CaseFormatter.addWrappedFieldForRead(displayList, "Info", getInfo());
 
         return displayList.toArray(new String[0]);
@@ -59,10 +61,11 @@ public abstract class PropertyCase extends Case {
             this.location = (String) newValues.get("location");
         }
         if (newValues.containsKey("monetary-damage") && newValues.get("monetary-damage") != null) {
-            this.monetaryDamage = (Integer) newValues.get("monetary-damage");
+            this.monetaryDamage = (Double) newValues.get("monetary-damage");
         }
     }
 
+    //@@author Michael
     @Override
     public List<String> getAdditionalFields() {
         List<String> additionalFields = super.getAdditionalFields();

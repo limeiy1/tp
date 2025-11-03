@@ -137,7 +137,7 @@ It provides high-level operations such as adding, updating, deleting, and retrie
 Additionally, `Case` interacts with the `CaseFormatter` class
 to produce formatted representations of case data for display.
 
-> ℹ️ Note: Only attributes are shown in the diagram, methods are omitted.\
+> ℹ️ Note: Only attributes are shown in the diagram, methods are omitted.
 
 ![CaseFile Diagram](images/ClassDiagramCasefile.png)
 

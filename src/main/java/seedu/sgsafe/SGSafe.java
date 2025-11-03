@@ -3,10 +3,10 @@ package seedu.sgsafe;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.ConsoleHandler;
 
 import seedu.sgsafe.utils.command.Command;
 import seedu.sgsafe.utils.exceptions.InvalidCommandException;
+import seedu.sgsafe.utils.logger.LoggerConfig;
 import seedu.sgsafe.utils.storage.Storage;
 import seedu.sgsafe.utils.ui.Display;
 import seedu.sgsafe.utils.ui.Parser;
@@ -30,9 +30,8 @@ public class SGSafe {
      * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
+        LoggerConfig.configureLogger();
         logger.log(Level.INFO, "SGSafe application started.");
-        ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.SEVERE);
 
         //load the cases from the savefile
         storage.loadCaseManager();

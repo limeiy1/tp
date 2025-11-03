@@ -47,7 +47,7 @@ Given below are my contributions to the project.
         * Added documentation for the `list` command, including `--mode` and `--status` flags.
         * Provided examples for both verbose and summary modes.
         * Clarified expected output structure and optional field behavior.
-    * **Developer Guide**:
+    * **Developer Guide**: 
         * Documented implementation details of `ListCommand`.
         * Explained formatting logic, conditional field inclusion, and category integration.
         * Described rationale for soft-deletion filtering and test coverage strategy.

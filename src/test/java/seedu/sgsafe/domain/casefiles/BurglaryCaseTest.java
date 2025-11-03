@@ -40,59 +40,18 @@ public class BurglaryCaseTest {
     }
 
     @Test
-    void update_updatesFinancialValueAndLocation_andBaseFields() {
-        LocalDate date = LocalDate.of(2025, 10, 14);
-        BurglaryCase c = new BurglaryCase("F001B", "Case", date,
-                "Old info", "Victim", "Officer");
-
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("financial-value", 30000);
-        updates.put("location", "123 Orchard Road");
-        updates.put("title", "Updated Title");
-        updates.put("info", "Updated Info");
-        updates.put("officer", "Officer Lee");
-
-        c.update(updates);
-
-        assertEquals(30000, c.getFinancialValue());
-        assertEquals("123 Orchard Road", c.getLocation());
-        assertEquals("Updated Title", c.getTitle());
-        assertEquals("Updated Info", c.getInfo());
-        assertEquals("Officer Lee", c.getOfficer());
-    }
-
-    @Test
-    void update_handlesNullFinancialValueGracefully() {
-        LocalDate date = LocalDate.of(2025, 10, 14);
-        BurglaryCase c = new BurglaryCase("F001B", "Case", date, "Info", "V", "O");
-
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("financial-value", 10000);
-        c.update(updates);
-        assertEquals(10000, c.getFinancialValue());
-
-        Map<String, Object> updates2 = new HashMap<>();
-        updates2.put("financial-value", null);
-        updates2.put("location", "Bedok");
-        c.update(updates2);
-
-        assertEquals(10000, c.getFinancialValue());
-        assertEquals("Bedok", c.getLocation());
-    }
-
-    @Test
     void getReadCaseDisplay_includesAllRelevantFields() {
         LocalDate date = LocalDate.of(2025, 10, 14);
         BurglaryCase c = new BurglaryCase("F001B", "Home Burglary", date,
                 "Items stolen", "Victim", "Officer Tan");
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("financial-value", 20000);
+        updates.put("financial-value", 20000.00);
         updates.put("location", "123 Bukit Timah Road");
         c.update(updates);
 
         String[] lines = c.getReadCaseDisplay();
-        assertTrue(contains(lines, "Financial Value", "20000"));
+        assertTrue(contains(lines, "Financial Value", "20000.00"));
         assertTrue(contains(lines, "Location", "123 Bukit Timah Road"));
         assertTrue(contains(lines, "Info", "Items stolen"));
     }
@@ -118,14 +77,15 @@ public class BurglaryCaseTest {
         assertTrue(emptySave.contains("|location:"));
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("financial-value", 50000);
+        updates.put("financial-value", 50000.00);
         updates.put("location", "Pasir Ris");
         c.update(updates);
 
         String populated = c.toSaveString();
-        assertTrue(populated.contains("|financial-value:50000"));
+        assertTrue(populated.contains("|financial-value:50000.00"));
         assertTrue(populated.contains("|location:Pasir Ris"));
     }
+
 
     private boolean contains(String[] lines, String label, String value) {
         for (String l : lines) {

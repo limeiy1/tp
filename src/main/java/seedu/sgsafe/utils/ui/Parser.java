@@ -24,6 +24,7 @@ import seedu.sgsafe.utils.exceptions.InvalidByeCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidCaseIdException;
 import seedu.sgsafe.utils.exceptions.InvalidCloseCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidDateInputException;
+import seedu.sgsafe.utils.exceptions.InvalidDoubleException;
 import seedu.sgsafe.utils.exceptions.InvalidEditCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidFindCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidFormatStringException;
@@ -508,12 +509,10 @@ public class Parser {
                 }
                 break;
 
-            case "exceeded-speed",
-                 "number-of-victims",
-                 "speed-limit",
-                 "monetary-damage",
-                 "financial-value",
-                 "number-of-casualties":
+            case "number-of-victims",
+                 "number-of-casualties",
+                 "exceeded-speed",
+                 "speed-limit":
                 try {
                     Integer intValue = Integer.parseInt(value);
                     if (intValue < 0) {
@@ -527,6 +526,24 @@ public class Parser {
                     throw new InvalidIntegerException(flag);
                 }
                 break;
+
+            case "monetary-damage",
+                 "financial-value":
+                try {
+                    Double doubleValue = Double.parseDouble(value);
+                    if (doubleValue < 0) {
+                        logger.log(Level.WARNING, "Value for flag '" + flag + "' is negative: " + doubleValue);
+                        throw new InvalidDoubleException(flag);
+                    }
+                    doubleValue = Math.round(doubleValue * 100.0) / 100.0;
+                    typedValues.put(flag, doubleValue);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.WARNING, "Failed to parse double from non-numeric string '" + value
+                            + "' for flag '" + flag + "'.");
+                    throw new InvalidDoubleException(flag);
+                }
+                break;
+
             default:
                 // All other flags remain as String
                 typedValues.put(flag, value);

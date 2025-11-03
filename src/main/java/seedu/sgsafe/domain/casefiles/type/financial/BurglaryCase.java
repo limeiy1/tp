@@ -24,11 +24,13 @@ public class BurglaryCase extends FinancialCase {
         return location;
     }
 
+    //@@author shennontay
     @Override
     public String[] getReadCaseDisplay() {
         List<String> displayList = getBaseDisplayLines();
 
-        CaseFormatter.addWrappedFieldForRead(displayList, "Financial Value", String.valueOf(this.getFinancialValue()));
+        String formattedValue = (getFinancialValue() == null) ? "" : String.format("%.2f", getFinancialValue());
+        CaseFormatter.addWrappedFieldForRead(displayList, "Financial Value", formattedValue);
         CaseFormatter.addWrappedFieldForRead(displayList, "Location", this.location);
         CaseFormatter.addWrappedFieldForRead(displayList, "Info", getInfo());
 
@@ -48,6 +50,7 @@ public class BurglaryCase extends FinancialCase {
         }
     }
 
+    //@@author Michael
     @Override
     public List<String> getAdditionalFields() {
         List<String> additionalFields = super.getAdditionalFields();

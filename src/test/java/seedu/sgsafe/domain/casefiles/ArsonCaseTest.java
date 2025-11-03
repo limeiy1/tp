@@ -5,6 +5,7 @@ import seedu.sgsafe.domain.casefiles.type.property.ArsonCase;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,57 +30,32 @@ public class ArsonCaseTest {
     }
 
     @Test
-    void getReadCaseDisplay_includesMonetaryDamageIfPresent() {
-        LocalDate date = LocalDate.of(2025, 10, 14);
-        ArsonCase c = new ArsonCase("A001F1", "Warehouse Fire", date,
-                "Deliberate fire incident", "David", "Officer Ong");
+    void getValidEditFlags_returnsExpectedFlags() {
+        ArsonCase c = new ArsonCase("A003", "Warehouse Fire", LocalDate.now(),
+                "Deliberate ignition", "David", "Officer Ong");
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("monetary-damage", 10000);
-        c.update(updates);
-
-        String[] lines = c.getReadCaseDisplay();
-        assertTrue(containsLine(lines, "Monetary Damage", "10000"));
+        List<String> expected = List.of("title", "date", "info", "victim", "officer",
+                "location", "monetary-damage");
+        assertEquals(expected, c.getValidEditFlags());
     }
 
     @Test
-    void update_updatesLocationAndMonetaryDamageFields() {
+    void toSaveString_formatsMonetaryDamageWithTwoDecimalPlaces() {
         LocalDate date = LocalDate.of(2025, 10, 14);
-        ArsonCase c = new ArsonCase("A001F1", "Warehouse Fire", date,
-                "Deliberate fire incident", "David", "Officer Ong");
+        ArsonCase c = new ArsonCase("A001", "Factory Fire", date,
+                "Electrical fault suspected", "John", "Officer Lim");
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("location", "Jurong Industrial Park");
-        updates.put("monetary-damage", 200000);
-
+        updates.put("monetary-damage", 2000.0);
         c.update(updates);
 
-        assertEquals("Jurong Industrial Park", c.getLocation());
-        assertEquals(200000, c.getMonetaryDamage());
+        String saveString = c.toSaveString();
+        assertTrue(saveString.contains("|monetary-damage:2000.0"));
+
+        ArsonCase c2 = new ArsonCase("A002", "House Fire", date,
+                "Suspected arson", "Jane", "Officer Tan");
+        String saveString2 = c2.toSaveString();
+        assertTrue(saveString2.contains("|monetary-damage:"));
     }
 
-    @Test
-    void getReadCaseDisplay_includesLocationAndMonetaryDamage() {
-        LocalDate date = LocalDate.of(2025, 10, 14);
-        ArsonCase c = new ArsonCase("A001F1", "Warehouse Fire", date,
-                "Deliberate fire incident", "David", "Officer Ong");
-
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("location", "Jurong Industrial Park");
-        updates.put("monetary-damage", 200000);
-        c.update(updates);
-
-        String[] lines = c.getReadCaseDisplay();
-        assertTrue(containsLine(lines, "Location", "Jurong Industrial Park"));
-        assertTrue(containsLine(lines, "Monetary Damage", "200000"));
-    }
-
-    private boolean containsLine(String[] lines, String label, String value) {
-        for (String l : lines) {
-            if (l.contains(label) && l.contains(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

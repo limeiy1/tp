@@ -20,19 +20,19 @@ activate parser
 
 parser -[UI_COLOR]> parser : extractFlagValues(...)
 activate parser
-deactivate parser
+return
 
 parser -[UI_COLOR]> validator : haveValidFlags(...)
 activate validator UI_COLOR
-deactivate validator
+return
 
 parser -[UI_COLOR]> parser : parseListStatus(...)
 activate parser
-deactivate parser
+return
 
 parser -[UI_COLOR]> parser : parseListMode(...)
 activate parser
-deactivate parser
+return
 
 create participant ":ListCommand" as listCmd COMMAND_COLOR
 parser -[UI_COLOR]> listCmd : new ListCommand(...)

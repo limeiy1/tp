@@ -24,6 +24,7 @@ public class AccidentCase extends TrafficCase{
         return numberOfCasualties;
     }
 
+    //@@author shennontay
     @Override
     public String[] getReadCaseDisplay() {
         List<String> displayList = getBaseDisplayLines();
@@ -54,6 +55,7 @@ public class AccidentCase extends TrafficCase{
         }
     }
 
+    //@@author Michael
     @Override
     public List<String> getAdditionalFields() {
         List<String> additionalFields = super.getAdditionalFields();

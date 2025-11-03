@@ -46,7 +46,7 @@ public class TheftCaseTest {
                 "Old info", "Victim", "Officer");
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("financial-value", 1500);
+        updates.put("financial-value", 1500.00);
         updates.put("stolen-object", "Laptop");
         updates.put("info", "Updated info");
         updates.put("title", "Updated title");
@@ -54,7 +54,7 @@ public class TheftCaseTest {
 
         c.update(updates);
 
-        assertEquals(1500, c.getFinancialValue());
+        assertEquals(1500.00, c.getFinancialValue());
         assertEquals("Laptop", c.getStolenObject());
         assertEquals("Updated info", c.getInfo());
         assertEquals("Updated title", c.getTitle());
@@ -67,15 +67,15 @@ public class TheftCaseTest {
         TheftCase c = new TheftCase("F002T", "Case", date, "Info", "V", "O");
 
         Map<String, Object> first = new HashMap<>();
-        first.put("financial-value", 200);
+        first.put("financial-value", 200.00);
         c.update(first);
-        assertEquals(200, c.getFinancialValue());
+        assertEquals(200.00, c.getFinancialValue());
 
         Map<String, Object> second = new HashMap<>();
         second.put("financial-value", null);
         second.put("stolen-object", "Phone");
         c.update(second);
-        assertEquals(200, c.getFinancialValue());
+        assertEquals(200.00, c.getFinancialValue());
         assertEquals("Phone", c.getStolenObject());
     }
 
@@ -86,12 +86,12 @@ public class TheftCaseTest {
                 "Wallet stolen", "Victim", "Officer Tan");
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("financial-value", 1000);
+        updates.put("financial-value", 1000.00);
         updates.put("stolen-object", "Wallet");
         c.update(updates);
 
         String[] lines = c.getReadCaseDisplay();
-        assertTrue(contains(lines, "Financial Value", "1000"));
+        assertTrue(contains(lines, "Financial Value", "1000.00"));
         assertTrue(contains(lines, "Stolen Object", "Wallet"));
         assertTrue(contains(lines, "Info", "Wallet stolen"));
     }
@@ -117,12 +117,12 @@ public class TheftCaseTest {
         assertTrue(emptySave.contains("|stolen-object:"));
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("financial-value", 2500);
+        updates.put("financial-value", 2500.00);
         updates.put("stolen-object", "Watch");
         c.update(updates);
 
         String populated = c.toSaveString();
-        assertTrue(populated.contains("|financial-value:2500"));
+        assertTrue(populated.contains("|financial-value:2500.00"));
         assertTrue(populated.contains("|stolen-object:Watch"));
     }
 

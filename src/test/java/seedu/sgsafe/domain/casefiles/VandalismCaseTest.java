@@ -36,12 +36,12 @@ public class VandalismCaseTest {
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("location", "Downtown Block 5");
-        updates.put("monetary-damage", 1200);
+        updates.put("monetary-damage", 1200.00);
 
         c.update(updates);
 
         assertEquals("Downtown Block 5", c.getLocation());
-        assertEquals(1200, c.getMonetaryDamage());
+        assertEquals(1200.00, c.getMonetaryDamage());
     }
 
     @Test
@@ -52,12 +52,12 @@ public class VandalismCaseTest {
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("location", "Downtown Block 5");
-        updates.put("monetary-damage", 1200);
+        updates.put("monetary-damage", 1200.00);
         c.update(updates);
 
         String[] lines = c.getReadCaseDisplay();
         assertTrue(containsLine(lines, "Location", "Downtown Block 5"));
-        assertTrue(containsLine(lines, "Monetary Damage", "1200"));
+        assertTrue(containsLine(lines, "Monetary Damage", "1200.00"));
     }
 
     private boolean containsLine(String[] lines, String label, String value) {

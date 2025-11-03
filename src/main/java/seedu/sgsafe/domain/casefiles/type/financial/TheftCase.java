@@ -30,7 +30,8 @@ public class TheftCase extends FinancialCase {
     public String[] getReadCaseDisplay() {
         List<String> displayList = getBaseDisplayLines();
 
-        CaseFormatter.addWrappedFieldForRead(displayList, "Financial Value", String.valueOf(this.getFinancialValue()));
+        String formattedValue = (getFinancialValue() == null) ? "" : String.format("%.2f", getFinancialValue());
+        CaseFormatter.addWrappedFieldForRead(displayList, "Financial Value", formattedValue);
         CaseFormatter.addWrappedFieldForRead(displayList, "Stolen Object", this.stolenObject);
         CaseFormatter.addWrappedFieldForRead(displayList, "Info", getInfo());
 
@@ -51,6 +52,7 @@ public class TheftCase extends FinancialCase {
         }
     }
 
+    //@@author Michael
     @Override
     public List<String> getAdditionalFields() {
         List<String> additionalFields = super.getAdditionalFields();

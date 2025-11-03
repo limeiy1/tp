@@ -16,23 +16,24 @@ import java.util.Map;
  */
 public abstract class FinancialCase extends Case {
     /** The estimated financial value lost by the victim. */
-    private Integer financialValue;
+    private Double financialValue;
 
     public FinancialCase(String id, String title, LocalDate date, String info, String victim, String officer) {
         super(id, title, date, info, victim, officer);
         this.type = CaseType.FINANCIAL;
     }
 
-    public Integer getFinancialValue() {
+    public Double getFinancialValue() {
         return financialValue;
     }
 
+    //@@author shennontay
     @Override
     public String[] getReadCaseDisplay() {
         List<String> displayList = getBaseDisplayLines();
 
-        CaseFormatter.addWrappedFieldForRead(displayList, "Financial Value", String.valueOf(this.financialValue));
-
+        String formattedValue = (financialValue == null) ? "" : String.format("%.2f", financialValue);
+        CaseFormatter.addWrappedFieldForRead(displayList, "Financial Value", formattedValue);
         CaseFormatter.addWrappedFieldForRead(displayList, "Info", getInfo());
 
         return displayList.toArray(new String[0]);
@@ -48,10 +49,11 @@ public abstract class FinancialCase extends Case {
     public void update(Map<String, Object> newValues) {
         super.update(newValues);
         if (newValues.containsKey("financial-value") && newValues.get("financial-value") != null) {
-            this.financialValue = (Integer) newValues.get("financial-value");
+            this.financialValue = (Double) newValues.get("financial-value");
         }
     }
 
+    //@@author Michael
     @Override
     public List<String> getAdditionalFields() {
         List<String> additionalFields = super.getAdditionalFields();
@@ -62,6 +64,7 @@ public abstract class FinancialCase extends Case {
     @Override
     public String toSaveString() {
         return super.toSaveString()
-                + "|financial-value:" + (this.financialValue == null ? "" : this.financialValue);
+                + "|financial-value:"
+                + (this.financialValue == null ? "" : String.format("%.2f", this.financialValue));
     }
 }

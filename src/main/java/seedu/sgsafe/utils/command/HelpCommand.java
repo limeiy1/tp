@@ -10,10 +10,9 @@ import seedu.sgsafe.utils.ui.Display;
  */
 public class HelpCommand extends Command {
     private static final String HELP_TEXT =
-            "\n" +
-                    "\tSGSAFE HELP MENU\n" +
-                    "\tHere is a list of supported commands and their formats. Use this as a quick refere" +
-                    "nce to add, manage, and view cases.\n" +
+                    "SGSAFE HELP MENU\n" +
+                    "\tHere is a list of supported commands and their formats. Use this as a quick " +
+                    "reference to add, manage, and view cases.\n" +
                     "\t______________________________________________________________________________________" +
                     "____________________________________________\n" +
                     "\n" +
@@ -65,6 +64,26 @@ public class HelpCommand extends Command {
                     "\t\t--mode value      Controls the output detail level.\n" +
                     "\t\t\tsummary → One line per case (default)\n" +
                     "\t\t\tverbose → Detailed multi-line output\n" +
+                    "\n" +
+                    "\tDisplayed Fields (--mode summary):\n" +
+                    "\t\t• Status (Open/Closed)\n" +
+                    "\t\t• Category\n" +
+                    "\t\t• Case ID\n" +
+                    "\t\t• Date\n" +
+                    "\t\t• Title\n" +
+                    "\n" +
+                    "\tDisplayed Fields (--mode verbose):\n" +
+                    "\t\t• Case ID\n" +
+                    "\t\t• Status (Open/Closed)\n" +
+                    "\t\t• Category\n" +
+                    "\t\t• Title\n" +
+                    "\t\t• Date\n" +
+                    "\t\t• Info\n" +
+                    "\t\t• Created at\n" +
+                    "\t\t• Updated at\n" +
+                    "\n" +
+                    "\tNotes:\n" +
+                    "\t\t• Use the read command to view more fields\n" +
                     "\t________________________________________________________________________________________" +
                     "__________________________________________\n" +
                     "\n" +
@@ -93,6 +112,10 @@ public class HelpCommand extends Command {
                     "\t\t• Created at\n" +
                     "\t\t• Updated at\n" +
                     "\t\t• Additional category-specific fields (e.g., Weapon, Road name, Vehicle type, etc.)\n" +
+                    "\n" +
+                    "\tNotes:\n" +
+                    "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
+                    "\t\t• Use 'list' to check the case ID of the case to be read.\n" +
                     "\t___________________________________________________________________________________________" +
                     "_______________________________________\n" +
                     "\n" +
@@ -116,14 +139,15 @@ public class HelpCommand extends Command {
                     "\tNotes:\n" +
                     "\t\t• All flags must correspond to valid editable fields for that case type.\n" +
                     "\t\t• Invalid flags will cancel the update and display an error message.\n" +
-                    "\t\t• Use 'list' to check the case ID of the case before editing.\n" +
+                    "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
+                    "\t\t• Use 'list' to check the case ID of the case to be edited.\n" +
                     "\t____________________________________________________________________________________________" +
                     "______________________________________\n" +
                     "\n" +
                     "\tCLOSE — Mark a case as closed\n" +
                     "\n" +
                     "\tDescription:\n" +
-                    "\t\tMarks a case as closed. Closed cases remain in the system but are shown as [C].\n" +
+                    "\t\tMarks a case as closed. Closed cases remain in the system but are shown as [Closed].\n" +
                     "\n" +
                     "\tUsage:\n" +
                     "\t\tclose CASEID\n" +
@@ -133,19 +157,24 @@ public class HelpCommand extends Command {
                     "\n" +
                     "\tNotes:\n" +
                     "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
+                    "\t\t• Use 'list' to check the case ID of the case to be closed.\n" +
                     "\t___________________________________________________________________________________" +
                     "_______________________________________________\n" +
                     "\n" +
                     "\tOPEN — Reopen a closed case\n" +
                     "\n" +
                     "\tDescription:\n" +
-                    "\t\tReopens a previously closed case, changing its status back to [O].\n" +
+                    "\t\tReopens a previously closed case, changing its status back to [Open].\n" +
                     "\n" +
                     "\tUsage:\n" +
                     "\t\topen CASEID\n" +
                     "\n" +
                     "\tExamples:\n" +
                     "\t\topen 000003\n" +
+                    "\n" +
+                    "\tNotes:\n" +
+                    "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
+                    "\t\t• Use 'list' to check the case ID of the case to be opened.\n" +
                     "\t___________________________________________________________________________________________" +
                     "_______________________________________\n" +
                     "\n" +
@@ -161,7 +190,8 @@ public class HelpCommand extends Command {
                     "\t\tdelete 00012a\n" +
                     "\n" +
                     "\tNotes:\n" +
-                    "\t\t• The case ID must be exactly 6 hexadecimal digits.\n" +
+                    "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
+                    "\t\t• Use 'list' to check the case ID of the case to be deleted.\n" +
                     "\t____________________________________________________________________________________" +
                     "______________________________________________\n" +
                     "\n" +
@@ -203,7 +233,7 @@ public class HelpCommand extends Command {
                     "\t\tbye\n" +
                     "\t___________________________________________________________________________________________" +
                     "_______________________________________\n" +
-                    "\tEnd of help.\n";
+                    "\tEnd of help.";
 
 
 
