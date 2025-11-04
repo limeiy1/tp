@@ -24,15 +24,7 @@ public class EditPromptCommand extends Command {
     @Override
     public void execute() {
         try {
-            Case targetCase = CaseManager.getCaseById(caseId);
-            
-            if (targetCase == null) {
-                throw new CaseNotFoundException(caseId);
-            }
-
-            if (!targetCase.isOpen()) {
-                throw new CaseCannotBeEditedException(caseId);
-            }
+            Case targetCase = CaseManager.getEditableCase(caseId);
             
             // Get valid flags for this case type
             List<String> validFlags = targetCase.getValidEditFlags();
@@ -48,7 +40,7 @@ public class EditPromptCommand extends Command {
                 "Example: edit " + caseId + " --location home --date 2024-01-01"
             );
             
-        } catch (CaseNotFoundException e) {
+        } catch (CaseNotFoundException | CaseCannotBeEditedException e) {
             Display.printMessage(e.getErrorMessage());
         }
     }
