@@ -35,5 +35,10 @@ setting --type dateinput --value dd/mm-yyyy
 setting --type dateoutput --value ddmy
 setting --type timestampoutput --value dd-MM-yyyy HH-mm-ss
 setting --type timestampoutput --value helloworld
+find
+find --keyword
+find --keyword murder
+find --keyword murder --status closed
+find --keyword murder --status chicken
 list
 bye

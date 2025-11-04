@@ -5,9 +5,6 @@ package seedu.sgsafe.utils.command;
  * Determines whether the command should list open cases, closed cases, or all cases.
  */
 public enum CaseListingMode {
-    /** List all cases regardless of status. */
-    ALL,
-
     /** Defaults to listing all cases when command has no input arguments*/
     DEFAULT,
 

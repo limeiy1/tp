@@ -70,7 +70,8 @@ loop until userInput == "bye"
     return
 
     return
-
+    'Hidden arrow to position the destroy marker below the end of the activation bar.
+    cmd -[hidden]-> display
 
     destroy cmd
     sgsafe -[MAIN_COLOR]> storage : saveToFile()

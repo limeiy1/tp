@@ -1,0 +1,52 @@
+@startuml
+!include ../style.puml
+skinparam ArrowFontStyle plain
+
+participant ":SGSafe" as sgsafe MAIN_COLOR
+participant ":AddCommand" as addCmd COMMAND_COLOR
+
+activate sgsafe MAIN_COLOR
+
+sgsafe -[MAIN_COLOR]> addCmd : execute()
+activate addCmd COMMAND_COLOR
+
+addCmd -[COMMAND_COLOR]> addCmd : generateHexId()
+activate addCmd COMMAND_COLOR_T1
+addCmd --[COMMAND_COLOR]> addCmd : return id
+deactivate addCmd
+
+create participant ":Case" as case CASEFILE_COLOR
+addCmd -[COMMAND_COLOR]> case : create new Case(...)
+activate case CASEFILE_COLOR
+case --[CASEFILE_COLOR]> addCmd : return Case
+deactivate case
+
+participant "<<class>>\n:CaseManager" as caseManager CASEFILE_COLOR
+
+addCmd -[COMMAND_COLOR]> caseManager : addCase(case)
+activate caseManager CASEFILE_COLOR
+caseManager --[CASEFILE_COLOR]> addCmd : return
+deactivate caseManager
+
+addCmd -[COMMAND_COLOR]> addCmd : generateListTableHeaderMessage()
+activate addCmd COMMAND_COLOR_T1
+addCmd --[COMMAND_COLOR]> addCmd : return message
+deactivate addCmd
+
+addCmd -[COMMAND_COLOR]> case : getDisplayLine()
+activate case CASEFILE_COLOR
+case --[CASEFILE_COLOR]> addCmd : return displayLine
+deactivate case
+
+participant "<<class>>\n:Display" as display UI_COLOR
+addCmd -[COMMAND_COLOR]> display : printMessage(...)
+activate display UI_COLOR
+display --[UI_COLOR]> addCmd
+deactivate display
+
+addCmd --[COMMAND_COLOR]> sgsafe : return
+deactivate addCmd
+
+deactivate sgsafe
+
+@enduml

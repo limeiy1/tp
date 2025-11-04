@@ -3,10 +3,10 @@ hide circle
 skinparam classAttributeIconSize 0
 scale max 1024 width
 
-class RuntimeException <<Java>> {
+class RuntimeException {
 }
 
-class InvalidCommandException <<abstract>> {
+class "{abstract} \n InvalidCommandException" {
     - errorMessage: String[]
     # InvalidCommandException(errorMessage: String...)
     + getErrorMessages(): String[]
@@ -30,13 +30,13 @@ class IncorrectFlagException {
     + getInvalidFlags(): List<String>
 }
 
-RuntimeException <|-- InvalidCommandException
-InvalidCommandException <|-- InvalidCaseIdException
-InvalidCommandException <|-- InvalidSettingCommandException
-InvalidCommandException <|-- IncorrectFlagException
-InvalidCommandException <|-- EmptyCommandException
+RuntimeException <|-- "{abstract} \n InvalidCommandException"
+"{abstract} \n InvalidCommandException" <|-- InvalidCaseIdException
+"{abstract} \n InvalidCommandException" <|-- InvalidSettingCommandException
+"{abstract} \n InvalidCommandException" <|-- IncorrectFlagException
+"{abstract} \n InvalidCommandException" <|-- EmptyCommandException
 
-note left of InvalidCommandException
+note left of "{abstract} \n InvalidCommandException"
 Some irrelevant private variables (throughout this diagram}
 have been omitted for clarity
 end note

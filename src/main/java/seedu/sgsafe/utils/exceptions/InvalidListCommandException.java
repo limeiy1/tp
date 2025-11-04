@@ -9,7 +9,7 @@ public class InvalidListCommandException extends InvalidCommandException {
 
     private static final String ERROR_MESSAGE = "Your list command format is incorrect.";
     private static final String CORRECT_FORMAT_MESSAGE = "The correct format for a list command is:";
-    private static final String CORRECT_COMMAND_FORMAT = "list [--status <open|closed|all>] [--mode <verbose|summary>]";
+    private static final String CORRECT_COMMAND_FORMAT = "list [--status <open|closed>] [--mode verbose]";
     private static final String EXAMPLE_COMMAND = "Example: list --status closed --mode verbose";
     private static final String TIP = "The items in [ ] are optional.";
 

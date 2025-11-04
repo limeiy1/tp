@@ -9,6 +9,7 @@ public enum CommandType {
     DELETE,
     BYE,
     HELP,
+    FIND,
     SETTING,
     READ
 }

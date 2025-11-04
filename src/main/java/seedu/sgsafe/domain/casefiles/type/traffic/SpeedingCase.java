@@ -40,8 +40,9 @@ public class SpeedingCase extends TrafficCase {
         CaseFormatter.addWrappedFieldForRead(displayList, "Vehicle Type", this.getVehicleType());
         CaseFormatter.addWrappedFieldForRead(displayList, "Vehicle Plate", this.getVehiclePlate());
         CaseFormatter.addWrappedFieldForRead(displayList, "Road Name", this.getRoadName());
-        CaseFormatter.addWrappedFieldForRead(displayList, "Speed Limit", String.valueOf(this.speedLimit));
-        CaseFormatter.addWrappedFieldForRead(displayList, "Exceeded Speed", String.valueOf(this.exceededSpeed));
+        CaseFormatter.addWrappedFieldForRead(displayList, "Speed Limit", CaseFormatter.safeString(this.speedLimit));
+        CaseFormatter.addWrappedFieldForRead(displayList, "Exceeded Speed",
+                CaseFormatter.safeString(this.exceededSpeed));
 
         CaseFormatter.addWrappedFieldForRead(displayList, "Info", getInfo());
 

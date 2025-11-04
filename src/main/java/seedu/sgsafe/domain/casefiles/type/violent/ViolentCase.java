@@ -41,7 +41,7 @@ public abstract class ViolentCase extends Case {
 
         CaseFormatter.addWrappedFieldForRead(displayList, "Weapon", this.weapon);
         CaseFormatter.addWrappedFieldForRead(
-                displayList, "Number of Victims", String.valueOf(this.numberOfVictims));
+                displayList, "Number of Victims", CaseFormatter.safeString(this.numberOfVictims));
 
         CaseFormatter.addWrappedFieldForRead(displayList, "Info", getInfo());
 
