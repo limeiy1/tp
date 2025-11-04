@@ -3,12 +3,13 @@ package seedu.sgsafe.domain.casefiles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import seedu.sgsafe.utils.exceptions.CaseAlreadyClosedException;
 import seedu.sgsafe.utils.exceptions.CaseCannotBeEditedException;
 import seedu.sgsafe.utils.exceptions.CaseAlreadyOpenException;
 import seedu.sgsafe.utils.exceptions.CaseNotFoundException;
-import seedu.sgsafe.utils.exceptions.IncorrectFlagException;
 import seedu.sgsafe.utils.exceptions.InvalidEditFlagException;
 
 /**
@@ -17,6 +18,7 @@ import seedu.sgsafe.utils.exceptions.InvalidEditFlagException;
  */
 public class CaseManager {
 
+    private static final Logger logger = Logger.getLogger(CaseManager.class.getName());
     // Format string for generating case IDs
     private static final String CASE_ID_FORMAT = "%06x";
 
@@ -52,10 +54,19 @@ public class CaseManager {
      * @return the Case with the matching ID, or null if not found
      */
     public static Case getCaseById(String id) {
-        return caseList.stream()
-                .filter(c -> (c.getId().equals(id.toLowerCase()) && !c.isDeleted()))
+        logger.log(Level.FINE, "Fetching case by ID: " + id);
+        String lookupId = id.toLowerCase();
+
+        Case result = caseList.stream()
+                .filter(c -> c.getId().equals(lookupId))
+                .filter(c -> !c.isDeleted())
                 .findFirst()
                 .orElse(null);
+
+        if (result == null) {
+            logger.log(Level.FINE, "No case found: " + id);
+        }
+        return result;
     }
     //@@author
 
@@ -106,28 +117,50 @@ public class CaseManager {
      * @return the updated case’s display line
      * @throws CaseNotFoundException   if no case with the given ID exists
      * @throws InvalidEditFlagException  if any flags in {@code newFlagValues} are invalid
+     * @throws CaseCannotBeEditedException if the case is closed and cannot be edited
      */
     public static String editCase(String caseId, Map<String, Object> newFlagValues)
-            throws CaseNotFoundException, IncorrectFlagException {
-        // Retrieve the case to edit
+            throws CaseNotFoundException, InvalidEditFlagException, CaseCannotBeEditedException {
+
+        Case caseToEdit = getEditableCase(caseId);
+        validateEditFlags(caseToEdit, newFlagValues);
+
+        caseToEdit.update(newFlagValues);
+        return caseToEdit.getDisplayLine();
+    }
+
+    /* ----------- editCase() Helpers ----------- */
+    //@@author limeiy1
+    /**
+     * Retrieves a case by its ID and ensures it is editable (i.e., exists and is open).
+     *
+     * @param caseId the ID of the case to retrieve
+     * @return the editable Case object
+     * @throws CaseNotFoundException        if no case with the given ID exists
+     * @throws CaseCannotBeEditedException  if the case is closed and cannot be edited
+     */
+    public static Case getEditableCase(String caseId) throws CaseNotFoundException, CaseCannotBeEditedException {
         Case caseToEdit = getCaseById(caseId);
+
         if (caseToEdit == null) {
             throw new CaseNotFoundException(caseId);
         }
 
         if (!caseToEdit.isOpen()) {
+            logger.log(Level.WARNING, "Attempt to edit closed case: " + caseId);
             throw new CaseCannotBeEditedException(caseId);
         }
 
-        // Validate flags before updating
-        List<String> invalidFlags = getInvalidEditFlags(caseToEdit, newFlagValues);
-        if (!invalidFlags.isEmpty()) {
-            throw new InvalidEditFlagException(invalidFlags, caseId);
-        }
+        return caseToEdit;
+    }
+    //@@ author
 
-        //Update and return the display line
-        caseToEdit.update(newFlagValues);
-        return caseToEdit.getDisplayLine();
+    private static void validateEditFlags(Case caseToEdit, Map<String, Object> newFlagValues) {
+        List<String> invalidFlags = getInvalidEditFlags(caseToEdit, newFlagValues);
+
+        if (!invalidFlags.isEmpty()) {
+            throw new InvalidEditFlagException(invalidFlags, caseToEdit.getId());
+        }
     }
 
     /**
@@ -139,7 +172,7 @@ public class CaseManager {
      * @param newFlagValues a map of flag names and their corresponding values
      * @return list of invalid flag names; empty if all are valid
      */
-    public static List<String> getInvalidEditFlags(Case targetCase, Map<String, Object> newFlagValues) {
+    private static List<String> getInvalidEditFlags(Case targetCase, Map<String, Object> newFlagValues) {
         assert targetCase != null : "Target case must not be null";
         assert newFlagValues != null : "Input flag map must not be null";
 

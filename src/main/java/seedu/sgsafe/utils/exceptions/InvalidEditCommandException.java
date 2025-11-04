@@ -1,9 +1,8 @@
 package seedu.sgsafe.utils.exceptions;
 
 public class InvalidEditCommandException extends InvalidCommandException {
-    private static final String ERROR_MESSAGE = "Your edit command format is incorrect. ";
-    private static final String TIP = "The 'edit' command requires a valid case ID. " +
-            "Flags are optional but must be paired with their new values.";
+    private static final String ERROR_MESSAGE = "The case ID is missing or the format is incorrect.";
+    private static final String TIP = "Case ID should be exactly 6 characters of 0-9 or A-F.";
     private static final String EXAMPLE = "For example, try: \"edit 000000\" or \"edit 000000 --title new title \"";
 
     public InvalidEditCommandException() {
