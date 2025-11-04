@@ -14,8 +14,8 @@ public class HelpCommand extends Command {
                     "\tHere is a list of supported commands and their formats. Use this as a quick " +
                     "reference to add, manage, and view cases.\n" +
                     "\tNote: All input fields shown in [brackets] below are optional.\n" +
-                    "\t______________________________________________________________________________________" +
-                    "____________________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tADD — Create a new case\n" +
                     "\n" +
@@ -40,7 +40,7 @@ public class HelpCommand extends Command {
                     "\t\t• Date format defaults to dd/MM/yyyy. You can change it using the 'setting' command.\n" +
                     "\t\t• A maximum of 5000 characters is allowed for all fields.\n" +
                     "\t___________________________________________________________________________________________" +
-                    "_______________________________________\n" +
+                    "________________________\n" +
                     "\n" +
                     "\tLIST — View existing cases\n" +
                     "\n" +
@@ -83,8 +83,8 @@ public class HelpCommand extends Command {
                     "\n" +
                     "\tNotes:\n" +
                     "\t\t• Use the read command to view more fields\n" +
-                    "\t________________________________________________________________________________________" +
-                    "__________________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tREAD — Display full details of a specific case\n" +
                     "\n" +
@@ -116,7 +116,7 @@ public class HelpCommand extends Command {
                     "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
                     "\t\t• Use 'list' to check the case ID of the case to be read.\n" +
                     "\t___________________________________________________________________________________________" +
-                    "_______________________________________\n" +
+                    "________________________\n" +
                     "\n" +
                     "\tEDIT — Modify an existing case\n" +
                     "\n" +
@@ -141,8 +141,8 @@ public class HelpCommand extends Command {
                     "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
                     "\t\t• Use 'list' to check the case ID of the case to be edited.\n" +
                     "\t\t• Date format defaults to dd/MM/yyyy. You can change it using the 'setting' command.\n" +
-                    "\t____________________________________________________________________________________________" +
-                    "______________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tCLOSE — Mark a case as closed\n" +
                     "\n" +
@@ -158,8 +158,8 @@ public class HelpCommand extends Command {
                     "\tNotes:\n" +
                     "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
                     "\t\t• Use 'list' to check the case ID of the case to be closed.\n" +
-                    "\t___________________________________________________________________________________" +
-                    "_______________________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tOPEN — Reopen a closed case\n" +
                     "\n" +
@@ -176,7 +176,7 @@ public class HelpCommand extends Command {
                     "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
                     "\t\t• Use 'list' to check the case ID of the case to be opened.\n" +
                     "\t___________________________________________________________________________________________" +
-                    "_______________________________________\n" +
+                    "________________________\n" +
                     "\n" +
                     "\tDELETE — Delete a case\n" +
                     "\n" +
@@ -192,8 +192,8 @@ public class HelpCommand extends Command {
                     "\tNotes:\n" +
                     "\t\t• The case ID must be exactly 6 hexadecimal digits (e.g., 000001, 00beef).\n" +
                     "\t\t• Use 'list' to check the case ID of the case to be deleted.\n" +
-                    "\t____________________________________________________________________________________" +
-                    "______________________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tSETTING — Configure program settings\n" +
                     "\n" +
@@ -211,8 +211,8 @@ public class HelpCommand extends Command {
                     "\t\t• TYPE must be either 'dateinput' or 'dateoutput' or 'timestampoutput'.\n" +
                     "\t\t• VALUE must be a valid Java DateTimeFormatter pattern.\n" +
                     "\t\t• Default format is dd/MM/yyyy.\n" +
-                    "\t_______________________________________________________________________________________" +
-                    "___________________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tFIND — Filter cases by keywords \n" +
                     "\n" +
@@ -230,8 +230,8 @@ public class HelpCommand extends Command {
                     "\t\t• KEYWORD is a string literal that will be matched. However, it is case-insensitive.\n" +
                     "\t\t• This search is not case-sensitive and finds all cases where the title contains " +
                             "the KEYWORD string.\n" +
-                    "\t_______________________________________________________________________________________" +
-                    "___________________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tHELP — Display this help menu\n" +
                     "\n" +
@@ -240,8 +240,8 @@ public class HelpCommand extends Command {
                     "\n" +
                     "\tUsage:\n" +
                     "\t\thelp\n" +
-                    "\t_________________________________________________________________________________________" +
-                    "_________________________________________\n" +
+                    "\t___________________________________________________________________________________________" +
+                    "________________________\n" +
                     "\n" +
                     "\tBYE — Exit the program\n" +
                     "\n" +
@@ -255,7 +255,7 @@ public class HelpCommand extends Command {
                     "\t\t• After calling bye, no further input is accepted, additional input " +
                             "invalidates the command.\n" +
                     "\t___________________________________________________________________________________________" +
-                    "_______________________________________\n" +
+                    "________________________\n" +
                     "\tEnd of help.";
 
 
