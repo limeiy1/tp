@@ -478,6 +478,7 @@ public class Parser {
         }
     }
 
+    //@@ author limeiy1
     /**
      * Converts raw flag values from strings to their appropriate types based on flag names.
      * @param rawValues map of flag names and their string values as input by the user
@@ -486,87 +487,75 @@ public class Parser {
      * @throws InvalidIntegerException if a numerical flag value is non-numeric or negative
      */
     public static Map<String, Object> convertFlagValueTypes(Map<String, String> rawValues) {
-        logger.log(Level.FINE, "Starting flag value type conversion.");
+        logger.fine("Starting flag value type conversion.");
 
         Map<String, Object> typedValues = new HashMap<>();
+        LocalDate parsedDate;
 
-        for (var entry : rawValues.entrySet()) {
+        for (Map.Entry<String, String> entry : rawValues.entrySet()) {
             String flag = entry.getKey();
             String value = entry.getValue();
-            typedValues.put(flag, convertValueByFlag(flag, value)
+
+            // Convert based on flag type (e.g. date for "date", integer for "no-of-victims")
+            switch (flag) {
+            case "date":
+                try {
+                    parsedDate = DateFormatter.parseDate(rawValues.get("date"), Settings.getInputDateFormat());
+                    typedValues.put(flag, parsedDate);
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "Failed to parse date value '" + value + "' for flag '" + flag + "'.");
+                    throw new InvalidDateInputException();
+                }
+                break;
+
+            case "number-of-victims",
+                 "number-of-casualties",
+                 "exceeded-speed",
+                 "speed-limit":
+                try {
+                    Integer intValue = Integer.parseInt(value);
+                    if (intValue < 0) {
+                        logger.log(Level.WARNING,"Value for flag '" + flag + "' is negative: " + intValue);
+                        throw new InvalidIntegerException(flag);
+                    }
+                    typedValues.put(flag, intValue);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.WARNING, "Failed to parse integer from non-numeric string '" + value
+                            + "' for flag '" + flag + "'.");
+                    throw new InvalidIntegerException(flag);
+                }
+                break;
+
+            case "monetary-damage",
+                 "financial-value":
+                try {
+                    Double doubleValue = Double.parseDouble(value);
+                    if (doubleValue < 0) {
+                        logger.log(Level.WARNING, "Value for flag '" + flag + "' is negative: " + doubleValue);
+                        throw new InvalidDoubleException(flag);
+                    }
+                    if (Double.isInfinite(doubleValue) || doubleValue > MAX_DOUBLE) {
+                        logger.log(Level.WARNING, "Value for flag '" + flag +
+                                "' exceeds double bounds: " + doubleValue);
+                        throw new DoubleLengthExceededException(flag);
+                    }
+                    doubleValue = Math.round(doubleValue * 100.0) / 100.0;
+                    typedValues.put(flag, doubleValue);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.WARNING, "Failed to parse double from non-numeric string '" + value
+                            + "' for flag '" + flag + "'.");
+                    throw new InvalidNumberException(flag);
+                }
+                break;
+
+            default:
+                // All other flags remain as String
+                typedValues.put(flag, value);
+            }
         }
-        logger.log(Level.FINE, "Finished flag value type conversion.");
+
+        logger.fine("Finished flag value type conversion.");
         return typedValues;
-    }
-
-    /* ----------- convertFlagValueTypes() Helpers ----------- */
-    /**
-     * Converts a flag value from String to the appropriate type based on the flag name.
-     * @param flag
-     * @param value
-     * @return
-     */
-    private static Object convertValueByFlag(String flag, String value) {
-        return switch (flag) {
-        case "date" -> parseDate(value);
-
-        case "number-of-victims",
-             "number-of-casualties",
-             "exceeded-speed",
-             "speed-limit" -> parsePositiveInt(flag, value);
-
-        case "monetary-damage",
-             "financial-value" -> parsePositiveDouble(flag, value);
-
-        default -> value;
-        };
-    }
-
-    private static LocalDate parseDate(String value) {
-        try {
-            parsedDate = DateFormatter.parseDate(rawValues.get("date"), Settings.getInputDateFormat());
-            typedValues.put(flag, parsedDate);
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Failed to parse date value '" + value + "' for flag '" + flag + "'.");
-            throw new InvalidDateInputException();
-        }
-    }
-
-    private static Integer parsePositiveInt(String flag, String value) {
-        try {
-            Integer intValue = Integer.parseInt(value);
-            if (intValue < 0) {
-                logger.log(Level.WARNING,"Value for flag '" + flag + "' is negative: " + intValue);
-                throw new InvalidIntegerException(flag);
-            }
-            typedValues.put(flag, intValue);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Failed to parse integer from non-numeric string '" + value
-                    + "' for flag '" + flag + "'.");
-            throw new InvalidIntegerException(flag);
-        }
-    }
-
-    //@@ author limeiy1
-    private static Double parsePositiveDouble(String flag, String value) {
-        try {
-            Double doubleValue = Double.parseDouble(value);
-            if (doubleValue < 0) {
-                logger.log(Level.WARNING, "Value for flag '" + flag + "' is negative: " + doubleValue);
-                throw new InvalidDoubleException(flag);
-            }
-            if (Double.isInfinite(doubleValue) || doubleValue > MAX_DOUBLE) {
-                logger.log(Level.WARNING, "Value for flag '" + flag +
-                        "' exceeds double bounds: " + doubleValue);
-                throw new DoubleLengthExceededException(flag);
-            }
-            doubleValue = Math.round(doubleValue * 100.0) / 100.0;
-            typedValues.put(flag, doubleValue);
-        } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Failed to parse double from non-numeric string '" + value
-                    + "' for flag '" + flag + "'.");
-            throw new InvalidNumberException(flag);
-        }
     }
     //@@ author
 
