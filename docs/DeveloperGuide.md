@@ -353,6 +353,43 @@ The sequence diagram below illustrates the execution process for the add command
 
 The handleUserCommand() method in the main application loop will then invoke the `Storage` object to persist the new case.
 
+### Closing and Opening of Cases
+
+The close and open commands allow users to update the status of existing cases in the SGSafe system.
+The close command marks a case as completed, while the open command reopens a previously closed case.
+Both commands maintain data integrity by enforcing valid state transitions, preventing users from
+closing an already closed case or reopening one that does not exist.
+
+**Introduction**\
+The two commands follow the same structure:
+- `close CASE_ID`
+- `open CASE_ID`
+
+Each command requires one argument: the case ID, which uniquely identifies the case to be updated.
+
+**Closing of Cases**\
+When a user enters a close command, the Parser class processes the input as follows:
+1. The `parseInput()` method identifies the command keyword "close" and delegates parsing to `parseCloseCommand()`.
+2. `parseCloseCommand()` checks that a case ID argument is provided.
+    - If the case ID is missing, an InvalidCloseCommandException is thrown.
+    - If case ID format is incorrect or extra arguments are detected, an InvalidCaseIdException is thrown.
+3. Once validated, the method constructs a new CloseCommand object with the given case ID.
+
+Once parsed, the `CloseCommand.execute()` method performs the following steps:
+1. Calls `CaseManager.closeCase(caseId)`.
+2. Inside `CaseManager.closeCase()`:
+    - Retrieves the target case using `getCaseById(caseId)`.
+    - Throws CaseNotFoundException if the case does not exist.
+    - Checks whether the case is already closed. If case is closed, a CaseAlreadyClosedException is thrown.
+    - Otherwise, updates the case status using `caseToClose.setClosed()`.
+3. Retrieves the formatted display line of the updated case using `caseToClose.getDisplayLine()`.
+4. Displays a confirmation message to the user through `Display.printMessage()`.
+
+After execution, the `handleUserCommand()` method in main invokes Storage to persist the updated case status,
+ensuring that the closed state is saved permanently.
+
+**Opening of Cases**\
+The implementation logic is similar to that of closing a case.
 ---
 
 ### Editing Cases

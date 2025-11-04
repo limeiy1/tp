@@ -309,9 +309,11 @@ public class Parser {
      */
     private static Command parseCloseCommand(String remainder) {
         if (validator.inputIsEmpty(remainder)) {
+            logger.log(Level.WARNING, "CloseCommand parsing failed: input is empty");
             throw new InvalidCloseCommandException();
         }
         if (!validator.isValidCaseId(remainder)) {
+            logger.log(Level.WARNING, "CloseCommand parsing failed: invalid case ID");
             throw new InvalidCaseIdException();
         }
         return new CloseCommand(remainder);
@@ -333,9 +335,11 @@ public class Parser {
      */
     private static Command parseOpenCommand(String remainder) {
         if (validator.inputIsEmpty(remainder)) {
+            logger.log(Level.WARNING, "OpenCommand parsing failed: input is empty");
             throw new InvalidOpenCommandException();
         }
         if (!validator.isValidCaseId(remainder)) {
+            logger.log(Level.WARNING, "OpenCommand parsing failed: invalid case ID");
             throw new InvalidCaseIdException();
         }
         return new OpenCommand(remainder);
