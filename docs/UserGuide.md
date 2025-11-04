@@ -404,6 +404,7 @@ but numbers will be rounded off to nearest 2 decimals points.
 | Others           | others     | `--custom-category STRING`                                                                                                    |
 
 > ⚠️ Warning: A maximum value of 1,000,000,000,000.00 is allowed for `DECIMAL` inputs.
+> ⚠️ Warning: Make sure input is not out of range of the Integer data type for `INTEGER` inputs.
 ---
 
 ## FAQ
