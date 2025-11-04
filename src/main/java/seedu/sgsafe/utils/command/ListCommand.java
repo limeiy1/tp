@@ -151,11 +151,13 @@ public class ListCommand extends Command {
      * @return a new list containing only the cases that match the filter criteria
      */
     private ArrayList<Case> filterCasesByMode(ArrayList<Case> caseList) {
-        return new ArrayList<>(
+        ArrayList<Case> filtered = new ArrayList<>(
                 caseList.stream()
                         .filter(this::isCaseVisible)
                         .toList()
         );
+        assert filtered.stream().noneMatch(Case::isDeleted) : "Deleted cases should not be included";
+        return filtered;
     }
 
     /**
