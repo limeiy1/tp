@@ -16,6 +16,7 @@ import seedu.sgsafe.utils.command.ReadCommand;
 import seedu.sgsafe.utils.command.OpenCommand;
 import seedu.sgsafe.utils.command.SettingCommand;
 import seedu.sgsafe.utils.command.SettingType;
+import seedu.sgsafe.utils.exceptions.DoubleLengthExceededException;
 import seedu.sgsafe.utils.exceptions.DuplicateFlagException;
 import seedu.sgsafe.utils.exceptions.EmptyCommandException;
 import seedu.sgsafe.utils.exceptions.IncorrectFlagException;
@@ -32,6 +33,7 @@ import seedu.sgsafe.utils.exceptions.InvalidHelpCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidIntegerException;
 import seedu.sgsafe.utils.exceptions.InvalidListCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidAddCommandException;
+import seedu.sgsafe.utils.exceptions.InvalidNumberException;
 import seedu.sgsafe.utils.exceptions.InvalidOpenCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidReadCommandException;
 import seedu.sgsafe.utils.exceptions.InvalidSettingCommandException;
@@ -68,6 +70,9 @@ public class Parser {
 
     // Maximum allowed length for any input value
     private static final int MAX_INPUT_LENGTH = 5000;
+
+    // Maximum allowed value for double
+    private static final double MAX_DOUBLE = 1_000_000_000_000.0; // adjust per domain
 
     // Placeholder for escaped flag sequences
     private static final String ESCAPED_FLAG_PLACEHOLDER = "<<<ESCAPED_DOUBLE_DASH>>>";
@@ -166,9 +171,7 @@ public class Parser {
      *   <li>{@code list} — Lists cases using the default mode and non-verbose output</li>
      *   <li>{@code list --status open} — Lists only open cases</li>
      *   <li>{@code list --status closed} — Lists only closed cases</li>
-     *   <li>{@code list --status all} — Lists all cases</li>
      *   <li>{@code list --mode verbose} — Enables verbose output</li>
-     *   <li>{@code list --status open --mode summary} — Lists open cases with summary output</li>
      * </ul>
      * If {@code --status} is present, its value must be one of {@code open}, {@code closed}, or {@code all}.
      * If {@code --mode} is present, its value must be either {@code verbose} or {@code summary}.
@@ -203,7 +206,6 @@ public class Parser {
      * <ul>
      *   <li>{@code open} — Maps to {@link CaseListingMode#OPEN_ONLY}</li>
      *   <li>{@code closed} — Maps to {@link CaseListingMode#CLOSED_ONLY}</li>
-     *   <li>{@code all} — Maps to {@link CaseListingMode#ALL}</li>
      * </ul>
      * If the value is {@code null} or empty, {@link CaseListingMode#DEFAULT} is returned.
      * Any other value will result in a {@link IncorrectFlagException}.
@@ -220,7 +222,6 @@ public class Parser {
         return switch (status.toLowerCase()) {
         case "open" -> CaseListingMode.OPEN_ONLY;
         case "closed" -> CaseListingMode.CLOSED_ONLY;
-        case "all" -> CaseListingMode.ALL;
         default -> throw new InvalidStatusException();
         };
     }
@@ -231,7 +232,6 @@ public class Parser {
      * Valid values are:
      * <ul>
      *   <li>{@code verbose} — Enables verbose output</li>
-     *   <li>{@code summary} — Enables summary (non-verbose) output</li>
      * </ul>
      * If the value is {@code null} or empty, summary mode is assumed by default.
      * Any other value will result in a {@link IncorrectFlagException}.
@@ -247,7 +247,6 @@ public class Parser {
 
         return switch (mode.toLowerCase()) {
         case "verbose" -> true;
-        case "summary" -> false;
         default -> throw new InvalidListCommandException();
         };
     }
@@ -494,9 +493,8 @@ public class Parser {
         for (var entry : rawValues.entrySet()) {
             String flag = entry.getKey();
             String value = entry.getValue();
-            typedValues.put(flag, convertValueByFlag(flag, value));
+            typedValues.put(flag, convertValueByFlag(flag, value)
         }
-
         logger.log(Level.FINE, "Finished flag value type conversion.");
         return typedValues;
     }
@@ -526,23 +524,25 @@ public class Parser {
 
     private static LocalDate parseDate(String value) {
         try {
-            return DateFormatter.parseDate(value, Settings.getInputDateFormat());
+            parsedDate = DateFormatter.parseDate(rawValues.get("date"), Settings.getInputDateFormat());
+            typedValues.put(flag, parsedDate);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Failed to parse date value: " + value);
+            logger.log(Level.WARNING, "Failed to parse date value '" + value + "' for flag '" + flag + "'.");
             throw new InvalidDateInputException();
         }
     }
 
     private static Integer parsePositiveInt(String flag, String value) {
         try {
-            int intValue = Integer.parseInt(value);
+            Integer intValue = Integer.parseInt(value);
             if (intValue < 0) {
-                logger.log(Level.WARNING, "Negative integer for flag '" + flag + "': " + intValue);
+                logger.log(Level.WARNING,"Value for flag '" + flag + "' is negative: " + intValue);
                 throw new InvalidIntegerException(flag);
             }
-            return intValue;
+            typedValues.put(flag, intValue);
         } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid integer for flag '" + flag + "': " + value);
+            logger.log(Level.WARNING, "Failed to parse integer from non-numeric string '" + value
+                    + "' for flag '" + flag + "'.");
             throw new InvalidIntegerException(flag);
         }
     }
@@ -550,15 +550,22 @@ public class Parser {
     //@@ author limeiy1
     private static Double parsePositiveDouble(String flag, String value) {
         try {
-            double doubleValue = Double.parseDouble(value);
+            Double doubleValue = Double.parseDouble(value);
             if (doubleValue < 0) {
-                logger.log(Level.WARNING, "Negative double for flag '" + flag + "': " + doubleValue);
+                logger.log(Level.WARNING, "Value for flag '" + flag + "' is negative: " + doubleValue);
                 throw new InvalidDoubleException(flag);
             }
-            return Math.round(doubleValue * 100.0) / 100.0;
+            if (Double.isInfinite(doubleValue) || doubleValue > MAX_DOUBLE) {
+                logger.log(Level.WARNING, "Value for flag '" + flag +
+                        "' exceeds double bounds: " + doubleValue);
+                throw new DoubleLengthExceededException(flag);
+            }
+            doubleValue = Math.round(doubleValue * 100.0) / 100.0;
+            typedValues.put(flag, doubleValue);
         } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid double for flag '" + flag + "': " + value);
-            throw new InvalidDoubleException(flag);
+            logger.log(Level.WARNING, "Failed to parse double from non-numeric string '" + value
+                    + "' for flag '" + flag + "'.");
+            throw new InvalidNumberException(flag);
         }
     }
     //@@ author

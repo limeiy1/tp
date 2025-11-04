@@ -116,7 +116,7 @@ public class CaseFormatter {
             return;
         }
 
-        if (value == null || value.equalsIgnoreCase( "null") ||value.isEmpty()) {
+        if (value == null ||value.isEmpty()) {
             lines.add(formatPrefix(label, false));
             return;
         }
@@ -269,6 +269,8 @@ public class CaseFormatter {
 
         return new LineState(line, currentLength);
     }
-    //@@author shennontay
 
+    public static String safeString(Integer val) {
+        return val == null ? "" : val.toString();
+    }
 }

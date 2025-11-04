@@ -14,7 +14,7 @@ import seedu.sgsafe.utils.ui.Display;
  * <p>
  * This command supports multiple listing modes to filter cases:
  * {@link CaseListingMode#OPEN_ONLY}, {@link CaseListingMode#CLOSED_ONLY},
- * {@link CaseListingMode#ALL}, and {@link CaseListingMode#DEFAULT}.
+ * and {@link CaseListingMode#DEFAULT}.
  * It also supports verbose mode to display detailed case information.
  */
 public class ListCommand extends Command {
@@ -98,7 +98,6 @@ public class ListCommand extends Command {
             outputLines.add("Note: Only basic case details (e.g. Title) are shown here and is truncated if too long.");
             outputLines.add("For full case information (e.g. case-specific details like murder weapon),");
             outputLines.add("use the read command");
-            outputLines.add("To see how to use the read command, run: help read");
             outputLines.add("To use the read command, run: read <caseID>");
             outputLines.add("---");
         }
@@ -172,7 +171,7 @@ public class ListCommand extends Command {
         return switch (this.listingMode) {
         case OPEN_ONLY -> caseRecord.isOpen();
         case CLOSED_ONLY -> !caseRecord.isOpen();
-        case ALL, DEFAULT -> true;
+        case DEFAULT -> true;
         };
     }
 
@@ -189,7 +188,7 @@ public class ListCommand extends Command {
      * <ul>
      *   <li>{@code OPEN_ONLY} → "open"</li>
      *   <li>{@code CLOSED_ONLY} → "closed"</li>
-     *   <li>{@code ALL} or {@code DEFAULT} → "in total"</li>
+     *   <li>{@code DEFAULT} → "in total"</li>
      * </ul>
      *
      * @param caseCount the number of cases matching the current listing mode
@@ -199,7 +198,7 @@ public class ListCommand extends Command {
         String statusLabel = switch (this.listingMode) {
         case OPEN_ONLY -> "open";
         case CLOSED_ONLY -> "closed";
-        case ALL, DEFAULT -> "in total";
+        case DEFAULT -> "in total";
         };
 
         if (caseCount == 0) {

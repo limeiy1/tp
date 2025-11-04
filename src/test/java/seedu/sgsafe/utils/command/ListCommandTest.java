@@ -25,7 +25,7 @@ import java.util.ArrayList;
 class ListCommandTest {
 
     private static final int NUMBER_OF_PREAMBLE_LINES_SHARED = 1; // case count
-    private static final int NUMBER_OF_PREAMBLE_LINES_VERBOSE = NUMBER_OF_PREAMBLE_LINES_SHARED + 7;
+    private static final int NUMBER_OF_PREAMBLE_LINES_VERBOSE = NUMBER_OF_PREAMBLE_LINES_SHARED + 6;
     private static final int NUMBER_OF_PREAMBLE_LINES_SUMMARY = NUMBER_OF_PREAMBLE_LINES_SHARED + 5 + 1;
     private static final int NUMBER_OF_LINES_BETWEEN_VERBOSE_MODE = 2; // Created at and updated at
 
@@ -41,7 +41,7 @@ class ListCommandTest {
 
     @Test
     void list_withNoCases_returnsHeaderOnly() {
-        ListCommand command = new ListCommand(CaseListingMode.ALL, false);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, false);
         String[] output = command.getCaseDescriptions(caseList);
 
         assertEquals(1, output.length);
@@ -97,7 +97,7 @@ class ListCommandTest {
         closedCase.setClosed();
         caseList.add(closedCase);
 
-        String[] output = new ListCommand(CaseListingMode.ALL, false).getCaseDescriptions(caseList);
+        String[] output = new ListCommand(CaseListingMode.DEFAULT, false).getCaseDescriptions(caseList);
         assertEquals("You currently have 3 cases in total", output[0]);
         assertEquals(NUMBER_OF_PREAMBLE_LINES_SUMMARY+3, output.length);
         assertTrue(output[NUMBER_OF_PREAMBLE_LINES_SUMMARY].contains("Robbery"));
@@ -123,7 +123,7 @@ class ListCommandTest {
         LocalDate date = LocalDate.of(2025, 10, 1);
         caseList.add(new TheftCase("000001", "Robbery", date, "Masked suspect", "John Doe", "Officer Tan"));
 
-        ListCommand command = new ListCommand(CaseListingMode.ALL, true);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, true);
         String[] output = command.getCaseDescriptions(caseList);
 
         assertTrue(output[NUMBER_OF_PREAMBLE_LINES_VERBOSE].startsWith("======== CASE ID 000001 ========"));
@@ -148,7 +148,7 @@ class ListCommandTest {
         LocalDate date = LocalDate.of(2025, 10, 1);
         caseList.add(new TheftCase("000001", "Robbery", date, "Masked suspect", "John Doe", "Officer Tan"));
 
-        ListCommand command = new ListCommand(CaseListingMode.ALL, false);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, false);
         String[] output = command.getCaseDescriptions(caseList);
 
         assertEquals(NUMBER_OF_PREAMBLE_LINES_SUMMARY+1, output.length);
@@ -166,7 +166,7 @@ class ListCommandTest {
         closedCase.setClosed();
         caseList.add(closedCase);
 
-        ListCommand command = new ListCommand(CaseListingMode.ALL, true);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, true);
         String[] output = command.getCaseDescriptions(caseList);
 
         boolean foundFraudCategory = false;
@@ -196,7 +196,7 @@ class ListCommandTest {
         closedCase.setClosed();
         caseList.add(closedCase);
 
-        ListCommand command = new ListCommand(CaseListingMode.ALL, false);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, false);
         String[] output = command.getCaseDescriptions(caseList);
 
         assertEquals(NUMBER_OF_PREAMBLE_LINES_SUMMARY+3, output.length);
@@ -211,7 +211,7 @@ class ListCommandTest {
         String longInfo = "X".repeat(150); // long unbroken string
         caseList.add(new ScamCase("000004", "Forgery", date, longInfo, "Alex", "Officer Lee"));
 
-        ListCommand command = new ListCommand(CaseListingMode.ALL, true);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, true);
         String[] output = command.getCaseDescriptions(caseList);
 
         boolean foundInfoLabel = false;
@@ -234,7 +234,7 @@ class ListCommandTest {
         LocalDate date = LocalDate.of(2025, 10, 1);
         caseList.add(new VandalismCase("000005", "Vandalism", date, "Graffiti", null, null));
 
-        ListCommand command = new ListCommand(CaseListingMode.ALL, true);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, true);
         String[] output = command.getCaseDescriptions(caseList);
 
         assertTrue(output[NUMBER_OF_PREAMBLE_LINES_VERBOSE+2].startsWith("Category"));
@@ -252,7 +252,7 @@ class ListCommandTest {
         LocalDate date = LocalDate.of(2023, 10, 5);
         caseList.add(new ScamCase("000006", "Forgery", date, "Fake documents", "Sam", "Officer Teo"));
 
-        ListCommand command = new ListCommand(CaseListingMode.ALL, true);
+        ListCommand command = new ListCommand(CaseListingMode.DEFAULT, true);
         String[] output = command.getCaseDescriptions(caseList);
 
         boolean foundCategory = false;

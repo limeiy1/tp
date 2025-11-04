@@ -114,14 +114,6 @@ class ParserTest {
     }
 
     @Test
-    void parseInput_listStatusAll_returnsAllMode() {
-        Command command = Parser.parseInput("list --status all");
-        assertEquals(CommandType.LIST, command.getCommandType());
-        assertInstanceOf(ListCommand.class, command);
-        assertEquals(CaseListingMode.ALL, ((ListCommand) command).getListingMode());
-    }
-
-    @Test
     void parseInput_listStatusInvalid_throwsListCommandException() {
         assertThrows(InvalidStatusException.class, () -> Parser.parseInput("list --status banana"));
     }

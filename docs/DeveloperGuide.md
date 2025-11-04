@@ -202,7 +202,7 @@ supporting role in the application.
 
 ![SupportingCommandClassDiagram](images/SupportingCommandClassDiagram.png)
 
-> ℹ️ Note: Only non-trivial fields and methods are shown in the above diagram.\
+> ℹ️ Note: Only non-trivial fields and methods are shown in the above diagram.
 
 
 #### Key Classes
@@ -300,10 +300,8 @@ Here are some key points about the exception class structure:
   more context about the error.
 - In the main business logic of the application, when the exception is thrown, we can use the getter `getErrorMessage()`
   method to retrieve the array of string and display them.
-- Since `InvalidCommandException` inherits from Java's Exception class, we can treat this as a standard checked
-  exception and catch it using try-catch blocks. It can also be implicitly upcasted to Exception type.
-
-
+- Since `InvalidCommandException` inherits from Java's Exception class, we can catch it using try-catch blocks. 
+  It can also be implicitly upcasted to `RuntimeException` or `Exception` type.
 
 ---
 
@@ -463,7 +461,7 @@ Given below are the instructions for manual testing of SGSafe. Please note that 
 2. Test case: List cases with status filter
     - Input: `list --status closed`
     - Expected Output: All the cases that have been closed will be listed out.
-    -
+
 3. Test case: List cases with verbose mode
     - Input: `list --mode verbose`
     - Expected Output: More information will be shown per case.
