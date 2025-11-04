@@ -10,7 +10,7 @@
     - [CaseFile Component](#casefile-component)
     - [Command Component](#command-component)
     - [Storage Component](#storage-component)
-    - [Commons](#Commons)
+    - [Commons](#commons)
 4. [Implementation](#implementation)
 5. [Appendix A: Product Scope](#appendix-a-product-scope)
     - [Target user profile](#target-user-profile)
