@@ -239,7 +239,6 @@ Example output:
 
 > ℹ️ Note: Not all edited fields will show up in the return message after a successful edit. To view the updated case in full detail, use the `read` command.\
 > ℹ️ Note: A closed case cannot be edited. To edit the case, reopen the case using the [`open`](#opening-a-case-open) command.\
-> ℹ️ Note: The above are stored as strings (except date). No special formatting is required for those inputs.\
 > ℹ️ Note: Date is stored as a Java LocalDate. The default input format is `dd/MM/yyyy`. You may wish to change it using
 > the [Settings](#settings-setting) command below.\
 > ⚠️ Warning: A maximum of 5000 characters is allowed for all the fields.
@@ -287,7 +286,7 @@ The type argument determines the date format. It must be one of the following:
 * `setting --type dateinput --value dd-MM-yyyy`. Sets the required format for date inputs. 
 The application will only accept dates matching the `dd-MM-yyyy` format.
 * `setting --type dateoutput --value dd/MM/yyyy`.  Sets the display format for all dates to `dd/MM/yyyy`.
-* `setting --type timestampoutput --value dd/MM/yyyy HH:mm:ss` Sets the display format for all timestamps to `dd/MM/yyyy HH:mm:ss`.
+* `setting --type timestampoutput --value dd/MM/yyyy HH:mm:ss`. Sets the display format for all timestamps to `dd/MM/yyyy HH:mm:ss`.
 
 ---
 
@@ -328,8 +327,7 @@ To look for a case within the system that matches the title.
 **Format:** `find --keyword KEYWORD [--status <open|closed>]`
 
 > ℹ️ Note: KEYWORD is a string literal that will be matched. However, it is case-insensitive.\
-> ℹ️ Note: This search is not case-sensitive asd finds all cases where the title contains the 
-> consecutive KEYWORD string.
+> ℹ️ Note: This search will find all cases where the title contains the consecutive `KEYWORD` string.
 
 **Example**
 - `find --keyword murder` will find all cases with the keyword murder in its title
@@ -365,7 +363,7 @@ application.
 
 Please **DO NOT** edit the `data.txt` file on your own as this may lead to data corruption.
 In addition, do not open the `data.txt` file as the program is running or change the permissions
-to the `data.txt` file.
+to the `data.txt` file. This should also be applied to the `sgsafe.log` file.
 
 ---
 
@@ -412,7 +410,7 @@ but numbers will be rounded off to nearest 2 decimals points.
 
 **Q**: How do I transfer my data to another computer?\
 **A**: You can copy the `data.txt` file from the current working directory of the source computer to the directory
-containing the .jar file of the destination computer. It is your responsibility to ensure that the file is not corrupted
+containing the .jar file of the destination computer. It is your responsibility to ensure that the file is not corrupted.
 
 **Q**: Is it recommended that I edit the `data.txt` file directly?\
 **A**: It is not recommended as you may corrupt your data if you modify any data incorrectly. You should not touch the 
@@ -438,13 +436,22 @@ it.
 and output formats using the [setting](#settings-setting) command. The supported formats are based on Java's DateTimeFormatter.
 
 **Q**: How are the case ID generated?\
-**A**: Case IDs are generated automatically by the system in hexadecimal format, starting from `000001` and incrementing
+**A**: Case IDs are generated automatically by the system in hexadecimal format, starting from `000000` and incrementing
 by 1 for each new case added. Deleted cases' IDs are not reused. This is because the system uses the case ID as a unique identifier
 for each case, and reusing IDs could lead to confusion and data integrity issues.
+
+**Q**: Can I use non english characters (specifically, non ASCII printable characters) in the input fields?\
+**A**: Yes and no. Unfortunately, there is no direct answer for that. SGSafe does support Unicode characters in input fields,
+but there may be limitations based on your terminal or command prompt's ability to handle and display such characters.
+If you encounter issues, it is recommended to stick to standard ASCII printable characters for compatibility. We did not intentionally
+restrict the character set as we would like to provide the needed flexibility for users.
 
 ---
 
 ## Command Summary
+
+NOTE: The notation `OR` below means either keyword can be used, but not both.
+
 | Action          | Format                                                                                                | Example                                                                                                                    |
 |-----------------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
 | **Add case**    | `add --category CATEGORY --title TITLE --date DATE --info INFO [--victim VICTIM] [--officer OFFICER]` | `add --category Theft --title Theft case --date 15/10/2025 --info Stolen wallet --victim John Doe --officer Officer Smith` |
@@ -459,4 +466,9 @@ for each case, and reusing IDs could lead to confusion and data integrity issues
 | **Help**        | `help`                                                                                                | `help`                                                                                                                     |
 | **Exit**        | `bye`                                                                                                 | `bye`                                                                                                                      |
 
-^ OR above means either keyword can be used, but not both.
+## Coming Soon
+Some features that are being considered for future releases include:
+- User authentication and role-based access control to ensure that only authorized personnel can access sensitive case information.
+- Locking of data file and log file for security reasons.
+- Allow logging of interviews and statements related to a case.
+- User defined tags for cases to allow more flexible categorisation.
